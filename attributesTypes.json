@@ -1,0 +1,1427 @@
+{
+	"Box": {
+		"inheritance": [],
+		"deleteObject": {
+			"name": "delObject",
+			"text": "Delete",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"objectName": {
+			"name": "name",
+			"text": "Name",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"objectNameInput": {
+			"name": "name",
+			"text": "Name:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "nameAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"foregroundColor": {
+			"name": "foreground",
+			"text": "Foreground Color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"foregroundColor-R": {
+			"name": "foregroundColor-R",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"foregroundColor-G": {
+			"name": "foregroundColor-G",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""}
+		},
+		"foregroundColor-B": {
+			"name": "foregroundColor-B",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"backgroundColor": {
+			"name": "backgroundColor",
+			"text": "Background Color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"backgroundColor-R": {
+			"name": "backgroundColor-R",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"backgroundColor-G": {
+			"name": "backgroundColor-G",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"backgroundColor-B": {
+			"name": "backgroundColor-B",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"position": {
+			"name": "pos",
+			"text": "Position",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"position X": {
+			"name": "pos-X",
+			"text": "X:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"position Y": {
+			"name": "pos-Y",
+			"text": "Y:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"position W": {
+			"name": "pos-W",
+			"text": "Width:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"position H": {
+			"name": "pos-H",
+			"text": "Height:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"drawData": {
+			"name": "drawData",
+			"text": "Draw data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"drawBorder": {
+			"name": "drawData-drawBorder",
+			"text": "Draw border",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"borderWidth": {
+			"name": "drawData-ogBorderWidth",
+			"text": "Border width:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"isFilled": {
+			"name": "drawData-isFilled",
+			"text": "Is filled",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"roundedEdges": {
+			"name": "drawData-roundedEdges",
+			"text": "Rounded edges",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"roundedCorners": {
+			"name": "drawData-roundedCorners",
+			"text": "Rounded corners",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"roundness": {
+			"name": "drawData-roundness",
+			"text": "Roundness:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"drawBackground": {
+			"name": "drawData-drawBackground",
+			"text": "Draw background",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"additive": {
+			"name": "drawData-additive",
+			"text": "Additive",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"activeCorners": {
+			"name": "drawData",
+			"text": "Active corners",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"activeCorners-topLeft": {
+			"name": "drawData-activeCorners-topLeft",
+			"text": "Top left",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"activeCorners-topRight": {
+			"name": "drawData-activeCorners-topRight",
+			"text": "Top right",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"activeCorners-bottomLeft": {
+			"name": "drawData-activeCorners-bottomLeft",
+			"text": "Bottom left",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"activeCorners-bottomRight": {
+			"name": "drawData-activeCorners-bottomRight",
+			"text": "Bottom right",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		}
+	},
+	"ImageFrame": {
+		"inheritance": ["Box"],
+		"imageData": {
+			"name": "image",
+			"text": "Image data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"imagePath": {
+			"name": "imageData-imageName",
+			"text": "Image Path",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"imageSize-width": {
+			"name": "imageData-ogSize-W",
+			"text": "Image width:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"imageSize-height": {
+			"name": "imageData-ogSize-H",
+			"text": "Image height:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 4,
+				"splashText": ""
+			}
+		},
+		"animation": {
+			"name": "imageData-animation",
+			"text": "Animation",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"isAnimation": {
+			"name": "imageData-isAnimation",
+			"text": "Is animated",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"numOfFrames": {
+			"name": "imageData-numOfFrames",
+			"text": "Number of frames",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"frameRate": {
+			"name": "imageData-frameRate",
+			"text": "Frame rate",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		}
+	},
+	"Label": {
+		"inheritance": ["Box", "ImageFrame"],
+		"textData": {
+			"name": "textData",
+			"text": "Text data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"textInput": {
+			"name": "text",
+			"text": "Text:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"textSize": {
+			"name": "ogFontSize",
+			"text": "Text size:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"textAlign":{
+			"name": "alignText",
+			"text": "Align text:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 13,
+				"splashText": ""
+			}
+		},
+		"fontName": {
+			"name": "fontName",
+			"text": "Font name:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 15,
+				"splashText": ""
+			}
+		},
+		"drawText": {
+			"name": "textData-drawText",
+			"text": "Draw text",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"multiline": {
+			"name": "textData-multiline",
+			"text": "Multiline",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"scrollable": {
+			"name": "textData-scrollable",
+			"text": "Scrollable",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"scrollAmount": {
+			"name": "scrollAmount",
+			"text": "Scroll amount:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"textColor": {
+			"name": "textColor",
+			"text": "Text color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			}
+		},
+		"textColor-R": {
+			"name": "fontColor-R",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"textColor-G": {
+			"name": "fontColor-G",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"textColor-B": {
+			"name": "fontColor-B",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		}
+	},
+	"TextInputBox": {
+		"inheritance": ["Box", "ImageFrame", "Label"],
+		"inputData": {
+			"name": "inputData",
+			"text": "Text input data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"charaLimit": {
+			"name": "charLimit",
+			"text": "Charater limit: ",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "moreNumbersAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"splashText": {
+			"name": "splashText",
+			"text": "Splash text:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"growRect": {
+			"name": "growRect",
+			"text": "Grow rect",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"header": {
+			"name": "header",
+			"text": "Header",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"replaceSplashText": {
+			"name": "replaceSplashText",
+			"text": "Replace splash text",
+			"type": "CheckBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": true
+			}
+		},
+		"allowedKeysFile": {
+			"name": "allowedKeysFilePath",
+			"text": "Allowed keys file:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"nonAllowedKeysFile": {
+			"name": "nonAllowedKeysFilePath",
+			"text": "Non allowed keys file:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		}
+	},
+	"Button": {
+		"inheritance": ["Box", "ImageFrame", "Label"],
+		"inputData": {
+			"name": "inputData",
+			"text": "Button input data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"active": {
+			"name": "active",
+			"text": "Start active",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"isHoldButton": {
+			"name": "isHoldButton",
+			"text": "Hold button",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"activeColor": {
+			"name": "activeColor",
+			"text": "Active color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"activeColor-R": {
+			"name": "activeColor-R",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"activeColor-G": {
+			"name": "activeColor-G",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"activeColor-B": {
+			"name": "activeColor-B",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"inactiveColor": {
+			"name": "inactiveColor",
+			"text": "Inactive color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"inactiveColor-R": {
+			"name": "inactiveColor-R",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"inactiveColor-G": {
+			"name": "inactiveColor-G",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"inactiveColor-B": {
+			"name": "inactiveColor-B",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		}
+	},
+	"Slider": {
+		"inheritance": ["Box", "ImageFrame", "Label"],
+		"sliderData": {
+			"name": "sliderData",
+			"text": "Slider data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"update": {
+			"name": "update",
+			"text": "Update",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"isVertical": {
+			"name": "isVertical",
+			"text": "Vertical",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"scrollObj": {
+			"name": "scrollObj",
+			"text": "Scroll bar object",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 15,
+				"splashText": ""
+			}
+		},
+		"startValue": {
+			"name": "startValue",
+			"text": "Start value:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		},
+		"moveText": {
+			"name": "moveText",
+			"text": "Move text",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"active": false
+			}
+		},
+		"sliderSize-W": {
+			"name": "sliderSize-W",
+			"text": "Slider width:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"sliderSize-H": {
+			"name": "sliderSize-H",
+			"text": "Slider height:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		}
+	},
+	"Switch": {
+		"inheritance": ["Box", "ImageFrame", "Label", "Button"],
+		"switchData": {
+			"name": "switchData",
+			"text": "Switch data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"options": {
+			"name": "options",
+			"text": "Options",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsText-1": {
+			"name": "optionsText-1",
+			"text": "Option 1",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 10,
+				"splashText": ""
+			}
+		},
+		"optionsText-2": {
+			"name": "optionsText-2",
+			"text": "Option 2",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 10,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-1": {
+			"name": "optionsFontColor-1",
+			"text": "Option 1 font color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsFontColor-R-1": {
+			"name": "optionsFontColor-R-1",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-G-1": {
+			"name": "optionsFontColor-G-1",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-B-1": {
+			"name": "optionsFontColor-B-1",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-2": {
+			"name": "optionsFontColor-2",
+			"text": "Option 2 font color",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsFontColor-R-2": {
+			"name": "optionsFontColor-R-2",
+			"text": "Red:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-G-2": {
+			"name": "optionsFontColor-G-2",
+			"text": "Green:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit":3,
+				"splashText": ""
+			}
+		},
+		"optionsFontColor-B-2": {
+			"name": "optionsFontColor-B-2",
+			"text": "Blue:",
+			"type": "TextBox",
+			"textColor": [255, 255, 255],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"alignText": {
+			"name": "alignText",
+			"text": "Align text",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsAlignText-1": {
+			"name": "optionsAlignText-1",
+			"text": "Option 1 align text",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 13,
+				"splashText": ""
+			}
+		},
+		"optionsAlignText-2": {
+			"name": "optionsAlignText-2",
+			"text": "Option 2 align text",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 13,
+				"splashText": ""
+			}
+		},
+		"font": {
+			"name": "font",
+			"text": "Options font",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsFontName": {
+			"name": "optionsFontName",
+			"text": "Options font",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 20,
+				"splashText": ""
+			}
+		},
+		"ogOptionsFontSize": {
+			"name": "ogOptionsFontSize",
+			"text": "Options font size",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
+		}
+	}
+}
