@@ -631,6 +631,7 @@ class TextInputBox(Label):
 		if event.type == pg.MOUSEBUTTONDOWN:
 			if event.button == 1:
 				if self.rect.collidepoint(pg.mouse.get_pos()):
+					self.pointer = len(self.text)
 					self.active = not self.active
 					if self.active:
 						self.foregroundColor = self.activeColor
@@ -648,7 +649,10 @@ class TextInputBox(Label):
 			if event.key == pg.K_RIGHT:
 				self.pointer = min(len(self.text), self.pointer + 1)
 			if event.key == pg.K_LEFT:
-				self.pointer = max(len(self.splashText), self.pointer - 1)
+				if not self.replaceSplashText:
+					self.pointer = max(len(self.splashText), self.pointer - 1)
+				else:
+					self.pointer = max(0, self.pointer - 1)
 
 		if self.active:
 			self.HandleKeyboard(event)
@@ -669,9 +673,8 @@ class TextInputBox(Label):
 					if textLength != 0 and self.text != self.splashText:
 						self.text = self.text[: self.pointer] + self.text[self.pointer + 1:]
 				else:
-					if event.key != pg.K_LEFT or event.key != pg.K_RIGHT:
+					if event.key != pg.K_LEFT and event.key != pg.K_RIGHT:
 						self.FilterText(event.unicode)
-						print(1)
 
 				if self.text == "":
 					self.text = self.splashText
@@ -692,25 +695,37 @@ class TextInputBox(Label):
 
 			if len(self.nonAllowedKeys) == 0:
 				if len(self.allowedKeys) == 0:
-					self.text = self.text[ : self.pointer - 1 + len(self.splashText)] + key + self.text[self.pointer + len(self.splashText) : ]
-					self.pointer += 1
+					if self.pointer == len(self.text):
+						self.text += key
+					else:
+						self.text = self.text[: self.pointer] + key + self.text[self.pointer:]
+					self.pointer = min(len(self.text), self.pointer + 1)
 
 				else:
 					if key in self.allowedKeys:
-						self.text = self.text[ : self.pointer - 1 + len(self.splashText)] + key + self.text[self.pointer + len(self.splashText) : ]
-						self.pointer += 1
+						if self.pointer == len(self.text):
+							self.text += key
+						else:
+							self.text = self.text[: self.pointer] + key + self.text[self.pointer :]
+						self.pointer = min(len(self.text), self.pointer + 1)
 
 			else:
 				if len(self.allowedKeys) == 0:
 					if key not in self.nonAllowedKeys:
 						if key in self.allowedKeys:
-							self.text = self.text[ : self.pointer - 1 + len(self.splashText)] + key + self.text[self.pointer + len(self.splashText) : ]
-							self.pointer += 1
+							if self.pointer == len(self.text):
+								self.text += key
+							else:
+								self.text = self.text[: self.pointer] + key + self.text[self.pointer :]
+							self.pointer = min(len(self.text), self.pointer + 1)
 
 				else:
 					if key not in self.nonAllowedKeys:
-						self.text = self.text[ : self.pointer - 1 + len(self.splashText)] + key + self.text[self.pointer + len(self.splashText) : ]
-						self.pointer += 1
+						if self.pointer == len(self.text):
+							self.text += key
+						else:
+							self.text = self.text[: self.pointer] + key + self.text[self.pointer :]
+						self.pointer = min(len(self.text), self.pointer + 1)
 
 
 	def Draw(self):
