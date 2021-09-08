@@ -1185,7 +1185,7 @@
 		},
 		"optionsText-1": {
 			"name": "optionsText-1",
-			"text": "Option 1",
+			"text": "Option 1:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1201,7 +1201,7 @@
 		},
 		"optionsText-2": {
 			"name": "optionsText-2",
-			"text": "Option 2",
+			"text": "Option 2:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1349,7 +1349,7 @@
 		},
 		"optionsAlignText-1": {
 			"name": "optionsAlignText-1",
-			"text": "Option 1 align text",
+			"text": "Option 1 align text:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1365,7 +1365,7 @@
 		},
 		"optionsAlignText-2": {
 			"name": "optionsAlignText-2",
-			"text": "Option 2 align text",
+			"text": "Option 2 align text:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1393,7 +1393,7 @@
 		},
 		"optionsFontName": {
 			"name": "optionsFontName",
-			"text": "Options font",
+			"text": "Options font:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1409,7 +1409,7 @@
 		},
 		"ogOptionsFontSize": {
 			"name": "ogOptionsFontSize",
-			"text": "Options font size",
+			"text": "Options font size:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
@@ -1420,6 +1420,161 @@
 			"inputData": {
 				"allowedKeysFile": "numberAllowedKeys.txt",
 				"charLimit": 2,
+				"splashText": ""
+			}
+		}
+	},
+	"MultiSelctButton": {
+		"inheritance": ["Box", "ImageFrame", "Label", "Button"],
+		"multiSelctButtonData": {
+			"name": "multiSelctButtonData",
+			"text": "Multi-button data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"inputData": {
+			"name": "inputData",
+			"text": "Input data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionAlignText": {
+			"name": "optionAlignText",
+			"text": "Options align text:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 13,
+				"splashText": ""
+			}
+		},
+		"relativePos": {
+			"name": "relativePos",
+			"text": "Relative position:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "textAllowedKeys.txt",
+				"charLimit": 13,
+				"splashText": ""
+			}
+		},
+		"isScrollable": {
+			"name": "isScrollable",
+			"text": "Is scrollable",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"allowNoSelection": {
+			"name": "allowNoSelection",
+			"text": "Allow no selection",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsSize": {
+			"name": "optionsSize",
+			"text": "Options size",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"optionsSize-W": {
+			"name": "optionsSize-W",
+			"text": "Width:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"optionsSize-H": {
+			"name": "optionsSize-H",
+			"text": "Height:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 3,
+				"splashText": ""
+			}
+		},
+		"options": {
+			"name": "options",
+			"text": "Options data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"numOfOptions": {
+			"name": "numOfOptions",
+			"text": "Number of options data:",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 1,
 				"splashText": ""
 			}
 		}

@@ -48,6 +48,7 @@ objectShortcuts = {
 	pg.K_5: "Button",
 	pg.K_6: "Slider",
 	pg.K_7: "Switch",
+	pg.K_8: "MultiSelctButton",
 
 	pg.K_KP1: "Box",
 	pg.K_KP2: "ImageFrame",
@@ -56,6 +57,7 @@ objectShortcuts = {
 	pg.K_KP5: "Button",
 	pg.K_KP6: "Slider",
 	pg.K_KP7: "Switch",
+	pg.K_KP8: "MultiSelctButton",
 }
 
 objectShortcutDisplay = {
@@ -242,6 +244,12 @@ class Attribute:
 				elif "FontName" in self.name:
 					self.textBox.text = str(getattr(self.parentObject, self.name))
 
+				elif "Size" in self.name:
+					if self.name.split("-")[1] == "W":
+						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[0])
+					if self.name.split("-")[1] == "H":
+						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[1])
+
 				elif self.name.split("-")[0] in self.parentObject.__dict__:
 					if self.name.split("-")[-1] == "1":
 						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[0])
@@ -256,6 +264,12 @@ class Attribute:
 						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[1])
 					if self.name.split("-")[1] == "B":
 						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[2])
+
+			elif self.name == "numOfOptions":
+				self.textBox.text = str(getattr(self.parentObject, self.name))
+
+			elif "Option-" in self.name:
+				self.textBox.text = str((getattr(self.parentObject, "optionNames")[int(self.name.split("-")[1].strip(":"))]))
 
 			else:
 				if "drawData" in self.name or "textData" in self.name or "imageData" in self.name:
@@ -340,7 +354,6 @@ class Attribute:
 					for diff in mainCamera.differences:
 						index = mainCamera.differences.index(diff)
 
-
 					if self.name.split("-")[1] == "X":
 						rect = getattr(self.parentObject, "ogRect")
 						rect = pg.Rect((mainCamera.rect.x // sf) + value, rect.y, rect.w, rect.h)
@@ -366,7 +379,21 @@ class Attribute:
 				if isNum:
 					# if attribute is in parent object set the value to the input
 					if self.name in self.parentObject.__dict__:
-						if value != "":
+						if self.name == "numOfOptions":
+							# add text input boxs for each option
+							setattr(self.parentObject, self.name, int(value))
+
+							options = getattr(self.parentObject, "optionNames")
+							if len(options) != self.parentObject.numOfOptions:
+								self.parentObject.optionNames = []
+
+								for i in range(self.parentObject.numOfOptions):
+									self.parentObject.optionNames.append(str(i + 1))
+								self.parentObject.CreateOptions()
+
+								self.AddAttribute(self.name, value)
+
+						elif value != "":
 							setattr(self.parentObject, self.name, int(value))
 							try:
 								if self.name == "text":
@@ -374,6 +401,7 @@ class Attribute:
 									self.parentObject.GetTextObjects()
 							except TypeError:
 								pass
+
 					# else check each combination of attributes
 					else:
 						if "options" in self.name:
@@ -411,6 +439,19 @@ class Attribute:
 											color = getattr(self.parentObject, self.name.split("-")[0])[1]
 											color = (color[0], color[1], max(min(value, 255), 0))
 											setattr(self.parentObject, self.name.split("-")[0], [getattr(self.parentObject, self.name.split("-")[0])[0], color])
+
+							elif "Size" in self.name:
+								if self.name.split("-")[1] == "W":
+									size = getattr(self.parentObject, self.name.split("-")[0])
+									size = (value, size[1])
+									setattr(self.parentObject, self.name.split("-")[0], size)
+									self.parentObject.CreateOptions()
+
+								if self.name.split("-")[1] == "H":
+									size = getattr(self.parentObject, self.name.split("-")[0])
+									size = (size[0], value)
+									setattr(self.parentObject, self.name.split("-")[0], size)
+									self.parentObject.CreateOptions()
 
 						elif "Color" in self.name:
 							if self.name.split("-")[0] in self.parentObject.__dict__:
@@ -470,7 +511,14 @@ class Attribute:
 							if self.name.split("-")[1] == "2":
 								setattr(self.parentObject, self.name.split("-")[0], [getattr(self.parentObject, self.name.split("-")[0])[0], str(value)])
 
-					if self.name in self.parentObject.__dict__:
+					elif "Option-" in self.name:
+						options = getattr(self.parentObject, "optionNames")
+						options[int(self.name.split("-")[1].strip(":"))] = str(value)
+
+						setattr(self.parentObject, "optionNames", options)
+						self.parentObject.CreateOptions()
+
+					elif self.name in self.parentObject.__dict__:
 						setattr(self.parentObject, self.name, str(value))
 
 						try:
@@ -530,6 +578,22 @@ class Attribute:
 			else:
 				if self.name in self.parentObject.__dict__:
 					setattr(self.parentObject, self.name, value)
+
+	def AddAttribute(self, name, value):
+		for i in range(int(getattr(self.parentObject, self.name))):
+			attribute = Attribute(f"Option-{i}:", f"Option {i+1}", "TextBox", (215, 215, 215), ((45, 45, 45), (215, 215, 215), (184, 39, 39)), textData = {"alignText": "left", "fontSize": 10}, inputData={"allowedKeysFile": "displayTextAllowedKeys.txt", "charLimit": 15, "splashText": ""}, lists=[self.parent.attributes])
+
+			height = self.parent.textSurface.get_height()//1.5
+			if not self.parent.expandUpwards:
+				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, (self.rect.y + 2 * sf) + (((height * sf) + 1 * sf) * (i + 1)) , self.parent.rect.w - 6 * sf, height * sf)
+			else:
+				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, self.rect.y - (((height * sf) + 1 * sf) * (i + 1)), self.parent.rect.w - 6 * sf, height * sf)
+			attribute.surface = self.parent.surface
+			attribute.rect = attributeRect
+			attribute.parentObject = self.parent.parentObject
+			attribute.parent = self.parent
+			attribute.CreateObject()
+			attribute.UpdateRects()
 
 
 # properties menu
@@ -749,6 +813,9 @@ def CreateObject(objType):
 	elif objType == "Switch":
 		obj = Switch(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
+	elif objType == "MultiSelctButton":
+		obj = MultiSelctButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+
 	return obj
 
 # create a property menu for a new object
@@ -779,7 +846,7 @@ def CreatePropertyMenu(objType, newObj=None):
 
 	mainCamera.CreateDifferences()
 
-# inspect an object    ----    add ability to pin an inspection menu
+# inspect an object
 def Inspect():
 	global createdInspection, inspectionLabel
 	inspection = mainCamera
