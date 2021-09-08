@@ -33,6 +33,8 @@ backGroundColor = darkGray
 
 # is inspection enabled
 inspectMode = False
+pinnedInspections = []
+createdInspection = False
 
 # is debug mode enabled
 debugMode = False
@@ -689,6 +691,8 @@ def DrawLoop():
 	if inspectMode:
 		Inspect()
 
+	for inspection in pinnedInspections:
+		inspection.Draw()
 
 	pg.display.update()
 
@@ -705,7 +709,6 @@ def Quit():
 		running = False
 
 Rescale(sf, rescaleScreen=False)
-
 
 # destroy an attribute
 def DestroyAttribute(attribute):
@@ -778,6 +781,7 @@ def CreatePropertyMenu(objType, newObj=None):
 
 # inspect an object    ----    add ability to pin an inspection menu
 def Inspect():
+	global createdInspection, inspectionLabel
 	inspection = mainCamera
 
 	for obj in allObjects:
@@ -787,51 +791,66 @@ def Inspect():
 
 	pg.draw.circle(screen, red, pg.mouse.get_pos(), 1*sf)
 
-	texts = []
+	texts = ""
+	numberOfLines = 0
 	try:
-		texts.append(f"-------General-------")
-		texts.append(f"Name: {inspection.name if inspection.name != '' else str(type(inspection).__name__)}")
-		texts.append(f"Pos: x:{inspection.rect.x//sf - mainCamera.rect.x//sf}, y:{inspection.rect.y//sf - mainCamera.rect.y//sf}")
-		texts.append(f"Size: w:{inspection.rect.w//sf}, h:{inspection.rect.h//sf}")
-		texts.append(f"Foreground color: {inspection.foregroundColor}")
-		texts.append(f"Background color: {inspection.backgroundColor}")
+		texts += f"-------General-------\\n"
+		texts += f"Name: {inspection.name if inspection.name != '' else str(type(inspection).__name__)}\\n"
+		texts += f"Pos: x:{inspection.rect.x//sf - mainCamera.rect.x//sf}, y:{inspection.rect.y//sf - mainCamera.rect.y//sf}\\n"
+		texts += f"Size: w:{inspection.rect.w//sf}, h:{inspection.rect.h//sf}\\n"
+		texts += f"Foreground color: {inspection.foregroundColor}\\n"
+		texts += f"Background color: {inspection.backgroundColor}\\n"
+		numberOfLines += 6
 	except AttributeError:
 		pass
 	try:
 		if "imageName" in inspection.__dict__:
-			texts.append(f"------Image Data------")
-		texts.append(f"Image name: {inspection.imageName}")
-		texts.append(f"Image size: {inspection.ogSize*sf}")
-		texts.append(f"Frame rate: {inspection.frameRate}")
-		texts.append(f"Is animation: {inspection.isAnimation}")
-		texts.append(f"Number of frames: {inspection.numOfFrames}")
+			texts += f"------Image Data------\\n"
+			numberOfLines += 1
+		texts += f"Image name: {inspection.imageName}\\n"
+		texts += f"Image size: {inspection.ogSize*sf}\\n"
+		texts += f"Frame rate: {inspection.frameRate}\\n"
+		texts += f"Is animation: {inspection.isAnimation}\\n"
+		texts += f"Number of frames: {inspection.numOfFrames}\\n"
+		numberOfLines += 5
 	except AttributeError:
 		pass
 	try:
 		if "fontName" in inspection.__dict__:
-			texts.append(f"---------Font---------")
-		texts.append(f"Font color: {inspection.fontColor}")
-		texts.append(f"Font name: {inspection.fontName}")
-		texts.append(f"Text size: {inspection.ogFontSize*sf}")
-		texts.append(f"Align text: {inspection.alignText}")
+			texts += f"---------Font---------\\n"
+			numberOfLines += 1
+		texts += f"Font color: {inspection.fontColor}\\n"
+		texts += f"Font name: {inspection.fontName}\\n"
+		texts += f"Text size: {inspection.ogFontSize*sf}\\n"
+		texts += f"Align text: {inspection.alignText}\\n"
+		numberOfLines += 4
 	except AttributeError:
 		pass
 	try:
 		if "charLimit" in inspection.__dict__:
-			texts.append(f"----Text Input Data----")
-		texts.append(f"Char limit: {inspection.charLimit if inspection.charLimit != -1 else 'Infinite'}")
-		texts.append(f"Splash text: {inspection.splashText}")
-		texts.append(f"Non allowed keys file path: {inspection.nonAllowedKeysFilePath}")
-		texts.append(f"Allowed keys file path: {inspection.allowedKeysFilePath}")
+			texts += f"----Text Input Data----\\n"
+			numberOfLines += 1
+		texts += f"Char limit: {inspection.charLimit if inspection.charLimit != -1 else 'Infinite'}\\n"
+		texts += f"Splash text: {inspection.splashText}\\n"
+		texts += f"Non allowed keys file path: {inspection.nonAllowedKeysFilePath}\\n"
+		texts += f"Allowed keys file path: {inspection.allowedKeysFilePath}\\n"
+		numberOfLines += 4
 	except AttributeError:
 		pass
-	try:
-		pg.draw.rect(screen, darkGray, (pg.mouse.get_pos()[0], pg.mouse.get_pos()[1], 100 * sf, (len(texts) * 6) * sf + 4 * sf))
-		DrawRectOutline(screen, lightGray, (pg.mouse.get_pos()[0], pg.mouse.get_pos()[1], 100 * sf, (len(texts) * 6) * sf + 4 * sf))
-		for i, text in enumerate(texts):
-			screen.blit(pg.font.SysFont("arial", 6 * sf).render(text, True, white), (pg.mouse.get_pos()[0] + 1 * sf, pg.mouse.get_pos()[1] + 2 * sf + (i * 6) * sf))
-	except AttributeError:
-		pass
+	if not createdInspection:
+		inspectionLabel = Label(screen, type(inspection).__name__, (pg.mouse.get_pos()[0] // sf, pg.mouse.get_pos()[1] // sf, 100, (numberOfLines * 6) + 4), (darkGray, lightGray), texts, ("arial", 6, white), textData = {"multiline": True, "isScrollable": False, "alignText": "center-top"}, lists=[])
+		createdInspection = True
+	inspectionLabel.Draw()
+
+
+def PinInspection():
+	if inspectionLabel not in pinnedInspections:
+		pinnedInspections.append(inspectionLabel)
+
+
+def RemoveInspections():
+	global pinnedInspections
+	pinnedInspections = []
 
 # handle events
 def ButtonPress(event):
@@ -1082,9 +1101,20 @@ while running:
 			if event.key == pg.K_F3:
 				debugMode = not debugMode
 
+		if event.type == pg.MOUSEBUTTONDOWN:
+			# pin inspection
+			if event.button == 2:
+				if inspectMode:
+					PinInspection()
+
+					if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
+						RemoveInspections()
 
 		# handle gui events
 		HandleGUI(event)
+
+		if inspectMode:
+			createdInspection = False
 
 		# handle object menus
 		for objMenu in objectMenus:
