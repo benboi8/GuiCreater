@@ -1284,15 +1284,15 @@ class DropDownMenu(MultiSelctButton):
 				self.optionsSize = [self.optionsSize[0], self.textSurface.get_height()//2]
 
 		if not self.expandUpwards:
-			rect = pg.Rect(self.ogRect.x + 3*sf, self.ogRect.y + 2*sf, self.optionsSize[0] - round(1.5 * sf), self.optionsSize[1])
+			rect = pg.Rect(self.ogRect.x + 3 * sf, self.ogRect.y + 2 * sf, self.optionsSize[0] - round(1.5 * sf), self.optionsSize[1])
 			for i in range(self.numOfOptions):
-				rect = pg.Rect(rect.x, rect.y + rect.h + 1*sf, rect.w, rect.h)
-				Button(self.surface, self.name, rect, (self.backgroundColor, self.inactiveColor, self.activeColor), self.optionNames[i], (self.fontName, self.fontSize//sf, self.fontColor), isHoldButton=self.inputIsHoldButton, textData={"alignText": "center"}, drawData={"drawBorder": True, "drawBackground": True, "roundedEdges": self.roundedEdges, "roundedCorners": self.roundedCorners, "roundness": self.roundness, "borderWidth": self.borderWidth / sf}, lists=[self.options])
+				rect = pg.Rect(rect.x, rect.y + rect.h + 1 * sf, rect.w, rect.h)
+				Button(self.surface, self.name, rect, (self.backgroundColor, self.inactiveColor, self.activeColor), self.optionNames[i], (self.fontName, self.fontSize // sf, self.fontColor), isHoldButton=self.inputIsHoldButton, textData={"alignText": "center"}, drawData={"drawBorder": True, "drawBackground": True, "roundedEdges": self.roundedEdges, "roundedCorners": self.roundedCorners, "roundness": self.roundness, "borderWidth": self.borderWidth / sf}, lists=[self.options])
 		else:
-			rect = pg.Rect(self.ogRect.x + 3*sf, self.ogRect.y, self.optionsSize[0] - 6 * sf, self.optionsSize[1])
-			for i in range(1, self.numOfOptions+1):
-				rect = pg.Rect(rect.x, rect.y - (rect.h + 1*sf), rect.w, rect.h)
-				Button(self.surface, self.name, rect, (self.backgroundColor, self.inactiveColor, self.activeColor), self.optionNames[-i], (self.fontName, self.fontSize//sf, self.fontColor), isHoldButton=self.inputIsHoldButton, textData={"alignText": "center"}, drawData={"drawBorder": True, "drawBackground": True, "roundedEdges": self.roundedEdges, "roundedCorners": self.roundedCorners, "roundness": self.roundness, "borderWidth": self.borderWidth / sf}, lists=[self.options])
+			rect = pg.Rect(self.ogRect.x + 3 * sf, self.ogRect.y, self.optionsSize[0] - 6 * sf, self.optionsSize[1])
+			for i in range(1, self.numOfOptions + 1):
+				rect = pg.Rect(rect.x, rect.y - (rect.h + 1 * sf), rect.w, rect.h)
+				Button(self.surface, self.name, rect, (self.backgroundColor, self.inactiveColor, self.activeColor), self.optionNames[-i], (self.fontName, self.fontSize // sf, self.fontColor), isHoldButton=self.inputIsHoldButton, textData={"alignText": "center"}, drawData={"drawBorder": True, "drawBackground": True, "roundedEdges": self.roundedEdges, "roundedCorners": self.roundedCorners, "roundness": self.roundness, "borderWidth": self.borderWidth / sf}, lists=[self.options])
 		if len(self.options) != 0:
 			if not self.allowNoSelection:
 				if self.expandUpwards:
@@ -1319,7 +1319,7 @@ class DropDownMenu(MultiSelctButton):
 						option.SwapColors(False)
 				else:
 					if self.rect.collidepoint(pg.mouse.get_pos()):
-						if pg.Rect(pg.Rect(self.ogRect.x * sf, self.ogRect.y * sf, self.rect.w, self.textSurface.get_height() + self.inactiveSize*sf)).collidepoint(pg.mouse.get_pos()):
+						if pg.Rect(pg.Rect(self.ogRect.x * sf, self.ogRect.y * sf, self.rect.w, self.textSurface.get_height() + self.inactiveSize * sf)).collidepoint(pg.mouse.get_pos()):
 							self.active = not self.active
 
 						if self.active:
@@ -1360,12 +1360,12 @@ class DropDownMenu(MultiSelctButton):
 			DrawRoundedRect(self.surface, (self.backgroundColor, self.foregroundColor), self.rect, self.roundness, self.borderWidth, self.activeCorners, self.isFilled)
 
 		if self.drawText:
-			self.surface.blit(self.textSurface, (self.textRect.x, self.textRect.y + 1*sf))
+			self.surface.blit(self.textSurface, (self.textRect.x, self.textRect.y + 1 * sf))
 
 		if self.active:
 			if self.expandUpwards:
 				self.rect.h = self.ogRect.h * sf
-				self.rect.y = (self.ogRect.y * sf) - self.rect.h + self.textSurface.get_height() + self.inactiveSize*sf
+				self.rect.y = (self.ogRect.y * sf) - self.rect.h + self.textSurface.get_height() + self.inactiveSize * sf
 
 			else:
 				self.rect.h = self.ogRect.h * sf
@@ -1375,7 +1375,7 @@ class DropDownMenu(MultiSelctButton):
 		else:
 			if self.expandUpwards:
 				self.rect.y = self.ogRect.y * sf
-			self.rect.h = self.textSurface.get_height() + self.inactiveSize*sf
+			self.rect.h = self.textSurface.get_height() + self.inactiveSize * sf
 		self.DrawImage()
 
 

@@ -1593,6 +1593,18 @@
 			},
 			"inputData": {}
 		},
+		"expandUpwards": {
+			"name": "expandUpwards",
+			"text": "Expand upwards",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
 		"inputIsHoldButton": {
 			"name": "inputIsHoldButton",
 			"text": "Input is hold button",
@@ -1615,7 +1627,11 @@
 				"alignText": "left",
 				"fontSize": 10
 			},
-			"inputData": {}
+			"inputData": {
+				"allowedKeysFile": "numberAllowedKeys.txt",
+				"charLimit": 2,
+				"splashText": ""
+			}
 		}
 	}
 }

@@ -1,3 +1,5 @@
+# auto-py-to-exe
+
 # import GUI objects
 import sys
 sys.path.insert(1, "/Python Projects/GuiObjects")
@@ -6,7 +8,7 @@ from GUIObjects import *
 import json
 
 # create screen
-width, height = 640, 360
+width, height = 870, 440
 sf = 2
 screen = pg.display.set_mode((width * sf, height * sf))
 
@@ -49,6 +51,7 @@ objectShortcuts = {
 	pg.K_6: "Slider",
 	pg.K_7: "Switch",
 	pg.K_8: "MultiSelctButton",
+	pg.K_9: "DropDownMenu",
 
 	pg.K_KP1: "Box",
 	pg.K_KP2: "ImageFrame",
@@ -58,6 +61,7 @@ objectShortcuts = {
 	pg.K_KP6: "Slider",
 	pg.K_KP7: "Switch",
 	pg.K_KP8: "MultiSelctButton",
+	pg.K_KP9: "DropDownMenu",
 }
 
 objectShortcutDisplay = {
@@ -167,7 +171,6 @@ class Camera(Box):
 		else:
 			self.backgroundColor = self.colors[0]
 			self.foregroundColor = self.colors[1]
-
 
 # attribute fields for objects
 class Attribute:
@@ -338,13 +341,10 @@ class Attribute:
 
 		if self.inputType == "TextBox":
 			self.textBox.HandleEvent(event)
-			if self.textBox.text != "":
-				try:
-					value = int(self.textBox.text)
-					isNum = True
-				except ValueError:
-					pass
-			else:
+			try:
+				value = int(self.textBox.text)
+				isNum = True
+			except ValueError:
 				value = self.textBox.text
 
 			# if input is a number check all inputs with a number input
@@ -377,33 +377,8 @@ class Attribute:
 			# if text box is active check all attributes with text inputs
 			if self.textBox.active:
 				if isNum:
-					# if attribute is in parent object set the value to the input
+					# check each combination of attributes
 					if self.name in self.parentObject.__dict__:
-						if self.name == "numOfOptions":
-							# add text input boxs for each option
-							setattr(self.parentObject, self.name, int(value))
-
-							options = getattr(self.parentObject, "optionNames")
-							if len(options) != self.parentObject.numOfOptions:
-								self.parentObject.optionNames = []
-
-								for i in range(self.parentObject.numOfOptions):
-									self.parentObject.optionNames.append(str(i + 1))
-								self.parentObject.CreateOptions()
-
-								self.AddAttribute(self.name, value)
-
-						elif value != "":
-							setattr(self.parentObject, self.name, int(value))
-							try:
-								if self.name == "text":
-									self.parentObject.Rescale()
-									self.parentObject.GetTextObjects()
-							except TypeError:
-								pass
-
-					# else check each combination of attributes
-					else:
 						if "options" in self.name:
 							if "FontColor" in self.name:
 								if self.name.split("-")[0] in self.parentObject.__dict__:
@@ -453,6 +428,9 @@ class Attribute:
 									setattr(self.parentObject, self.name.split("-")[0], size)
 									self.parentObject.CreateOptions()
 
+						elif "inactiveSize" in self.name:
+							setattr(self.parentObject, self.name, (int(value)))
+
 						elif "Color" in self.name:
 							if self.name.split("-")[0] in self.parentObject.__dict__:
 								if self.name.split("-")[1] == "R":
@@ -490,6 +468,31 @@ class Attribute:
 								else:
 									setattr(self.parentObject, self.name.split("-")[1], value)
 
+					# if attribute is in parent object set the value to the input
+					else:
+						if self.name == "numOfOptions":
+							# add text input boxs for each option
+							setattr(self.parentObject, self.name, int(value))
+
+							options = getattr(self.parentObject, "optionNames")
+							if len(options) != self.parentObject.numOfOptions:
+								self.parentObject.optionNames = []
+
+								for i in range(self.parentObject.numOfOptions):
+									self.parentObject.optionNames.append(str(i + 1))
+								self.parentObject.CreateOptions()
+
+								self.AddAttribute(self.name, value)
+
+						elif value != "":
+							setattr(self.parentObject, self.name, int(value))
+							try:
+								if self.name == "text":
+									self.parentObject.Rescale()
+									self.parentObject.GetTextObjects()
+							except TypeError:
+								pass
+
 					try:
 						self.parentObject.UpdateTextRect()
 					except AttributeError:
@@ -510,6 +513,11 @@ class Attribute:
 								setattr(self.parentObject, self.name.split("-")[0], [str(value), getattr(self.parentObject, self.name.split("-")[0])[1]])
 							if self.name.split("-")[1] == "2":
 								setattr(self.parentObject, self.name.split("-")[0], [getattr(self.parentObject, self.name.split("-")[0])[0], str(value)])
+
+					elif "inactiveSize" == self.name:
+						if value == "":
+							value = 0
+						setattr(self.parentObject, self.name, int(value))
 
 					elif "Option-" in self.name:
 						options = getattr(self.parentObject, "optionNames")
@@ -594,7 +602,6 @@ class Attribute:
 			attribute.parent = self.parent
 			attribute.CreateObject()
 			attribute.UpdateRects()
-
 
 # properties menu
 class Properties(DropDownMenu):
@@ -726,7 +733,6 @@ class Properties(DropDownMenu):
 		for attribute in self.attributes:
 			attribute.UpdateRects()
 
-
 # draw everything
 def DrawLoop():
 	# fill screen
@@ -759,7 +765,6 @@ def DrawLoop():
 		inspection.Draw()
 
 	pg.display.update()
-
 
 # quit program
 def Quit():
@@ -815,7 +820,7 @@ def CreateObject(objType):
 
 	elif objType == "MultiSelctButton":
 		obj = MultiSelctButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
-	
+
 	elif objType == "DropDownMenu":
 		obj = DropDownMenu(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
@@ -844,7 +849,7 @@ def CreatePropertyMenu(objType, newObj=None):
 
 	if newObj == None:
 		newObj = CreateObject(objType)
-	Properties(screen, objType, (width - 200, 0, 200, height), (lightBlack, darkWhite, lightRed), f"{objType} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
+	Properties(screen, objType, (width - 160, 0, 160, height), (lightBlack, darkWhite, lightRed), f"{objType} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
 	activeProperty = newObj
 
 	mainCamera.CreateDifferences()
@@ -990,6 +995,7 @@ def ButtonPress(event):
 # save
 def Save(fileName):
 	# get name for saved obj
+	CheckSaveFolder()
 	codeLines = ""
 	for obj in allObjects:
 		if obj.name != "":
@@ -1003,6 +1009,11 @@ def Save(fileName):
 		file.write(codeLines)
 
 	return True
+
+
+def CheckSaveFolder():
+	if not os.path.isdir('./saves'):
+		os.mkdir("./saves")
 
 # process objects into lines of code
 def ProcessObject(obj, name):
@@ -1121,26 +1132,23 @@ def ProcessObject(obj, name):
 	return codeLine
 
 
-# load
-
-
-
 # get object data
 objects = []
 with open(attributeTypesFilePath, "r") as typeDataFile:
 	objectData = json.load(typeDataFile)
 	typeDataFile.close()
+
 for prop in objectData:
 	for key in objectShortcutDisplay:
 		if key == prop:
 			prop = f"{objectShortcutDisplay[key]} - {prop}"
 	objects.append(prop)
 
-# object selection
+	# object selection
 	DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 30], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
 
 # camera
-mainCamera = Camera("Camera", (0, 0, width, height), ((50, 50, 50), lightGray))
+mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 
 saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 140, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 15, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, lists=[saveObjs, allDropDowns])
 confirmSave = Button(screen, "confirmSave", (290, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
