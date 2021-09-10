@@ -1578,5 +1578,44 @@
 				"splashText": ""
 			}
 		}
+	},
+	"DropDownMenu": {
+		"inheritance": ["Box", "ImageFrame", "Label", "Button", "MultiSelctButton"],
+		"dropDownButtonData": {
+			"name": "dropDownButtonData",
+			"text": "Drop down menu data",
+			"type": "Label",
+			"textColor": [45, 45, 45],
+			"colors": [[215, 215, 215], [45, 45, 45], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"inputIsHoldButton": {
+			"name": "inputIsHoldButton",
+			"text": "Input is hold button",
+			"type": "CheckBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "center",
+				"fontSize": 10
+			},
+			"inputData": {}
+		},
+		"inactiveSize": {
+			"name": "inactiveSize",
+			"text": "Inactive Size",
+			"type": "TextBox",
+			"textColor": [215, 215, 215],
+			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+			"textData": {
+				"alignText": "left",
+				"fontSize": 10
+			},
+			"inputData": {}
+		}
 	}
 }

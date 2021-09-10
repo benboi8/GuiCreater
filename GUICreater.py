@@ -815,6 +815,9 @@ def CreateObject(objType):
 
 	elif objType == "MultiSelctButton":
 		obj = MultiSelctButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+	
+	elif objType == "DropDownMenu":
+		obj = DropDownMenu(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
 	return obj
 
