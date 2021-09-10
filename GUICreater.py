@@ -30,6 +30,7 @@ activeProperty = None
 # all property menus
 propertiesMenus = []
 objectMenus = []
+
 # extra colors
 backGroundColor = darkGray
 
@@ -617,7 +618,7 @@ class Properties(DropDownMenu):
 
 		# get all the attributes and add them the list
 		for i, attribute in enumerate(inputData.get("attributes", [])):
-			height = self.textSurface.get_height()//1.5
+			height = self.textSurface.get_height()
 			if not self.expandUpwards:
 				attributeRect = pg.Rect(self.rect.x + 3 * sf, (self.rect.y + 2 * sf) + (((height * sf) + 1 * sf) * (i + 1)) , self.rect.w - 6 * sf, height * sf)
 			else:
@@ -1145,13 +1146,13 @@ for prop in objectData:
 	objects.append(prop)
 
 	# object selection
-	DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 30], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
+	DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 35], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
 
 # camera
 mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 
-saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 140, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 15, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, lists=[saveObjs, allDropDowns])
-confirmSave = Button(screen, "confirmSave", (290, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 200, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 24, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, lists=[saveObjs, allDropDowns])
+confirmSave = Button(screen, "confirmSave", (350, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 
 
 while running:
