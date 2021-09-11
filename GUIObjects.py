@@ -10,7 +10,7 @@ import os
 pg.init()
 clock = pg.time.Clock()
 
-sf = 1
+sf = 2
 gameState = "all"
 
 running = True
@@ -28,7 +28,7 @@ allScrollbars = []
 allSwitchs = []
 allMultiButtons = []
 allDropDowns = []
-allSideMenus = []
+allMessageBoxs = []
 
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -431,9 +431,9 @@ class Label(ImageFrame):
 		self.name = name
 		self.text = text
 		self.fontName = font[0]
-		self.ogFontSize = font[1]
 		self.fontColor = font[2]
 
+		self.ogFontSize = textData.get("fontSize", font[1])
 		self.alignText = textData.get("alignText", "center")
 		self.drawText = textData.get("drawText", True)
 		self.multiline = textData.get("multiline", False)
@@ -858,9 +858,9 @@ class Slider(Label):
 			drawData = self.drawData
 			drawData["isFilled"] = True
 			if self.roundedCorners:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1)*2, self.sliderSize[1] - (self.borderWidth+1)*2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1) * 2, self.sliderSize[1] - (self.borderWidth+1) * 2), colors, "", font, True, textData, drawData, imageData)
 			else:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth*2, self.sliderSize[1] - self.borderWidth*2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth * 2, self.sliderSize[1] - self.borderWidth*2), colors, "", font, True, textData, drawData, imageData)
 		else:
 			drawData = self.drawData
 			drawData["isFilled"] = True
@@ -1379,6 +1379,58 @@ class DropDownMenu(MultiSelctButton):
 		self.DrawImage()
 
 
+class MessageBox(Label):
+	def __init__(self, surface, name, rect, colors, title, text, font, textData={}, drawData={}, imageData={}, inputData={}, lists=[allMessageBoxs]):
+		super().__init__(surface, name, rect, colors, title, font, textData, drawData, imageData, lists)
+
+		drawData = inputData["messageDraw"]
+		textData = inputData["messageText"]
+		self.message = Label(surface, name, ((self.rect.x // sf) + 5, (self.rect.y // sf) + self.textSurface.get_height(), (self.rect.w // sf) - 10, (self.rect.h // sf) - self.textSurface.get_height() - 30), colors, text, font, textData, drawData, imageData, lists=[])
+
+		drawData = inputData["confirmDraw"]
+		textData = inputData["confirmText"]
+		self.confirmButton = Button(surface, name + "-Confirm", ((self.rect.x // sf) + (self.rect.w // sf) - 65, (self.rect.y // sf) + (self.rect.h // sf) - 25, 60, 20), colors, "Confirm", font, True, textData, drawData, imageData, lists=[])
+
+		drawData = inputData["cancelDraw"]
+		textData = inputData["cancelText"]
+		self.cancelButton = Button(surface, name + "-Cancel", ((self.rect.x // sf) + (self.rect.w // sf) - 130, (self.rect.y // sf) + (self.rect.h // sf) - 25, 60, 20), colors, "Cancel", font, True, textData, drawData, imageData, lists=[])
+
+	def HandleEvent(self, event):
+		self.message.HandleEvent(event)
+		self.confirmButton.HandleEvent(event)
+		self.cancelButton.HandleEvent(event)
+
+	def Draw(self):
+		if not self.roundedEdges and not self.roundedCorners:
+			pg.draw.rect(self.surface, self.backgroundColor, self.rect)
+
+			if not self.isFilled:
+				if self.drawBorder:
+					DrawRectOutline(self.surface, self.foregroundColor, self.rect, self.borderWidth)
+			else:
+				pg.draw.rect(self.surface, self.foregroundColor, self.rect)
+
+		elif self.roundedEdges and not self.roundedCorners:
+			DrawObround(self.surface, (self.foregroundColor, self.backgroundColor), self.rect, self.isFilled, self.additive, self.drawBorder, self.borderWidth)
+		else:
+			DrawRoundedRect(self.surface, (self.backgroundColor, self.foregroundColor), self.rect, self.roundness, self.borderWidth, self.activeCorners, self.isFilled)
+
+		if not self.multiline:
+			if self.drawText:
+				self.surface.blit(self.textSurface, self.textRect)
+		else:
+			self.GetTextObjects()
+			if self.drawText:
+				for textObj in self.textObjs:
+					if textObj[1].y >= self.rect.y and textObj[1].y + textObj[0].get_height() <= self.rect.y + self.rect.h:
+						self.surface.blit(textObj[0], textObj[1])
+		self.DrawImage()
+
+		self.message.Draw()
+		self.confirmButton.Draw()
+		self.cancelButton.Draw()
+
+
 def DrawGui():
 	for box in allBoxs:
 		if gameState in box.activeSurface or box.activeSurface == "all":
@@ -1420,7 +1472,9 @@ def DrawGui():
 		if gameState in dropDown.activeSurface or dropDown.activeSurface == "all":
 			dropDown.Draw()
 
-	# pg.display.update()
+	for messageBox in allMessageBoxs:
+		if gameState in messageBox.activeSurface or messageBox.activeSurface == "all":
+			messageBox.Draw()
 
 
 def HandleGUI(event):
@@ -1456,6 +1510,10 @@ def HandleGUI(event):
 		if gameState in dropDown.activeSurface or dropDown.activeSurface == "all":
 			dropDown.HandleEvent(event)
 
+	for messageBox in allMessageBoxs:
+		if gameState in messageBox.activeSurface or messageBox.activeSurface == "all":
+			messageBox.HandleEvent(event)
+
 
 def ButtonPress():
 	for buttonData in activeButtons:
@@ -1466,7 +1524,7 @@ def ButtonPress():
 
 
 if __name__ == "__main__":
-	Rescale(2)
+	Rescale(sf)
 	gameState = "Load character menu"
 	options = []
 	for i in range(0, 50):
@@ -1487,8 +1545,10 @@ if __name__ == "__main__":
 		Switch(screen, "switchDemo", (480, 50, 130, 40), (lightBlack, darkWhite, darkWhite), "Switch", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 15}, textData={"optionsText": ["option 1", "option 2"], "optionsFont": ("arial", 10), "optionsFontColor": [lightRed, lightBlue]})
 		MultiSelctButton(screen, "multiSelctButtonDemo", (10, 60, 80, 100), (lightBlack, darkWhite, lightRed), "MultiSelctButton", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 12}, textData={"alignText": "center-top"}, inputData={"optionNames": ["option 1", "option 2", "option 3"], "optionsSize": (80, 20)})
 		DropDownMenu(screen, "dropDownMenuDemo", (110, 60, 80, 100), (lightBlack, darkWhite, lightRed), "DropDownMenu", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 12, "inactiveY": 15}, textData={"alignText": "center-top"}, inputData={"optionNames": ["option 1", "option 2", "option 3"], "optionsSize": (70, 20)})
+		MessageBox(screen, "messageDemo", (200, 100, 200, 90), (lightBlack, darkWhite, lightRed), "Message title", "Message demo text", ("arial", 10, white), drawData={"borderWidth": 2}, textData={"alignText": "center-top"}, inputData={"messageDraw": {"borderWidth": 1}, "messageText": {"alignText": "center-top"}, "confirmDraw": {"borderWidth": 1}, "confirmText": {"alignText": "center-top"}, "cancelDraw": {"borderWidth": 1}, "cancelText": {"alignText": "center-top"}})
 
 	CreateAllObjects()
+
 
 	while running:
 		for event in pg.event.get():
