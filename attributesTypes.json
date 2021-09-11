@@ -272,7 +272,7 @@
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
 			"textData": {
 				"alignText": "left",
-				"fontSize": 10
+			 	"fontSize": 10
 			},
 			"inputData": {
 				"allowedKeysFile": "numberAllowedKeys.txt",
@@ -582,7 +582,7 @@
 			},
 			"inputData": {
 				"allowedKeysFile": "displayTextAllowedKeys.txt",
-				"charLimit": 20,
+				"charLimit": -1,
 				"splashText": ""
 			}
 		},
@@ -777,7 +777,7 @@
 				"fontSize": 10
 			},
 			"inputData": {
-				"allowedKeysFile": "moreNumbersAllowedKeys.txt",
+				"allowedKeysFile": "numberAllowedKeys.txt",
 				"charLimit": 3,
 				"splashText": ""
 			}
@@ -1564,7 +1564,7 @@
 		},
 		"numOfOptions": {
 			"name": "numOfOptions",
-			"text": "Number of options data:",
+			"text": "Number of options:",
 			"type": "TextBox",
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],

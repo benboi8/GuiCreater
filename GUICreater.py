@@ -14,6 +14,9 @@ screen = pg.display.set_mode((width * sf, height * sf))
 
 # save path for data
 savePath = "saves/"
+autoSavePath = "autoSaves/"
+lastSave = dt.datetime.now()
+autoSaveCounter = 0
 
 # attribute types
 attributeTypesFilePath = "attributesTypes.json"
@@ -109,7 +112,7 @@ class Camera(Box):
 			self.canMove = event.mod and event.key == pg.K_LCTRL
 
 			# reset the camera position to the top left
-			if event.key == pg.K_SPACE:
+			if pg.key.get_pressed()[pg.K_SPACE] and (pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]):
 				self.CreateDifferences()
 				self.Move((0, 0))
 
@@ -192,6 +195,8 @@ class Attribute:
 
 		self.textData = textData
 		self.inputData = inputData
+
+		self.numOfOptionsList = []
 
 		self.font = pg.font.SysFont(self.fontName, self.fontSize)
 		self.textSurface = self.font.render(self.text, True, self.textColor)
@@ -380,7 +385,21 @@ class Attribute:
 				if isNum:
 					# check each combination of attributes
 					if self.name in self.parentObject.__dict__:
-						if "options" in self.name:
+						if self.name == "numOfOptions":
+							# add text input boxs for each option
+							setattr(self.parentObject, self.name, int(value))
+
+							options = getattr(self.parentObject, "optionNames")
+							if len(options) != self.parentObject.numOfOptions:
+								self.parentObject.optionNames = []
+
+								for i in range(self.parentObject.numOfOptions):
+									self.parentObject.optionNames.append(str(i + 1))
+								self.parentObject.CreateOptions()
+
+								self.AddAttribute(self.name, value)
+
+						elif "options" in self.name:
 							if "FontColor" in self.name:
 								if self.name.split("-")[0] in self.parentObject.__dict__:
 									if self.name.split("-")[1] == "R":
@@ -471,21 +490,7 @@ class Attribute:
 
 					# if attribute is in parent object set the value to the input
 					else:
-						if self.name == "numOfOptions":
-							# add text input boxs for each option
-							setattr(self.parentObject, self.name, int(value))
-
-							options = getattr(self.parentObject, "optionNames")
-							if len(options) != self.parentObject.numOfOptions:
-								self.parentObject.optionNames = []
-
-								for i in range(self.parentObject.numOfOptions):
-									self.parentObject.optionNames.append(str(i + 1))
-								self.parentObject.CreateOptions()
-
-								self.AddAttribute(self.name, value)
-
-						elif value != "":
+						if value != "":
 							setattr(self.parentObject, self.name, int(value))
 							try:
 								if self.name == "text":
@@ -536,6 +541,14 @@ class Attribute:
 						except:
 							pass
 						if self.name == "text":
+							if ".txt" in value:
+								try:
+									with open(value, "r") as file:
+										contents = file.read()
+										setattr(self.parentObject, self.name, str(contents))
+										file.close()
+								except IOError:
+									pass
 							self.parentObject.Rescale()
 							self.parentObject.GetTextObjects()
 
@@ -589,14 +602,33 @@ class Attribute:
 					setattr(self.parentObject, self.name, value)
 
 	def AddAttribute(self, name, value):
-		for i in range(int(getattr(self.parentObject, self.name))):
-			attribute = Attribute(f"Option-{i}:", f"Option {i+1}", "TextBox", (215, 215, 215), ((45, 45, 45), (215, 215, 215), (184, 39, 39)), textData = {"alignText": "left", "fontSize": 10}, inputData={"allowedKeysFile": "displayTextAllowedKeys.txt", "charLimit": 15, "splashText": ""}, lists=[self.parent.attributes])
+		for obj in self.numOfOptionsList:
+			if obj in self.parent.attributes:
+				self.parent.attributes.remove(obj)
 
-			height = self.parent.textSurface.get_height()//1.5
+		self.numOfOptionsList = []
+		attribute = Attribute("optionNames:", "Option Names", "Label", (45, 45, 45), ((215, 215, 215), (45, 45, 45), (184, 39, 39)), textData = {"alignText": "center", "fontSize": 10}, inputData={}, lists=[self.parent.attributes, self.numOfOptionsList])
+
+		height = self.parent.textSurface.get_height()
+		if not self.parent.expandUpwards:
+			attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, (self.parent.attributes[-2].rect.y + 2 * sf) + ((height * sf) + 1 * sf) , self.parent.rect.w - 6 * sf, height * sf)
+		else:
+			attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, self.parent.attributes[-2].rect.y - ((height * sf) + 1 * sf), self.parent.rect.w - 6 * sf, height * sf)
+		attribute.surface = self.parent.surface
+		attribute.rect = attributeRect
+		attribute.parentObject = self.parent.parentObject
+		attribute.parent = self.parent
+		attribute.CreateObject()
+		attribute.UpdateRects()
+
+		for i in range(int(getattr(self.parentObject, self.name))):
+			attribute = Attribute(f"Option-{i}:", f"Option {i + 1}", "TextBox", (215, 215, 215), ((45, 45, 45), (215, 215, 215), (184, 39, 39)), textData = {"alignText": "left", "fontSize": 10}, inputData={"allowedKeysFile": "displayTextAllowedKeys.txt", "charLimit": 15, "splashText": ""}, lists=[self.parent.attributes, self.numOfOptionsList])
+
+			height = self.parent.textSurface.get_height()
 			if not self.parent.expandUpwards:
-				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, (self.rect.y + 2 * sf) + (((height * sf) + 1 * sf) * (i + 1)) , self.parent.rect.w - 6 * sf, height * sf)
+				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, (self.parent.attributes[-2].rect.y + 2 * sf) + (((height * sf) + 1 * sf)) , self.parent.rect.w - 6 * sf, height * sf)
 			else:
-				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, self.rect.y - (((height * sf) + 1 * sf) * (i + 1)), self.parent.rect.w - 6 * sf, height * sf)
+				attributeRect = pg.Rect(self.parent.rect.x + 3 * sf, self.parent.attributes[-2].rect.y - (((height * sf) + 1 * sf)), self.parent.rect.w - 6 * sf, height * sf)
 			attribute.surface = self.parent.surface
 			attribute.rect = attributeRect
 			attribute.parentObject = self.parent.parentObject
@@ -629,7 +661,6 @@ class Properties(DropDownMenu):
 			attribute.parent = self
 			attribute.CreateObject()
 			attribute.UpdateRects()
-
 			self.attributes.append(attribute)
 
 	def Draw(self):
@@ -734,6 +765,21 @@ class Properties(DropDownMenu):
 		for attribute in self.attributes:
 			attribute.UpdateRects()
 
+# inspection
+class Inspector(Label):
+	def __init__(self, surface, name, rect, colors, child, text, font, textData={}, drawData={}, imageData={}, lists=[]):
+		super().__init__(surface, name, rect, colors, text, font, textData, drawData, imageData, lists)
+		self.child = child
+		self.difference = []
+		self.CalculateDifference()
+
+	def CalculateDifference(self):
+		if self.child != None:
+			self.difference = [self.rect.x - self.child.rect.x, self.rect.y - self.child.rect.y]
+
+	def Update(self):
+		self.rect = pg.Rect(self.difference[0] + self.child.rect.x, self.difference[1] + self.child.rect.y, self.rect.w, self.rect.h)
+
 # draw everything
 def DrawLoop():
 	# fill screen
@@ -741,14 +787,20 @@ def DrawLoop():
 
 	mainCamera.Draw()
 
-	# draw gui objects
-	DrawGui()
-
 	if activeProperty != None:
 		if activeProperty.additive and activeProperty.roundedEdges and not activeProperty.roundedCorners:
 			DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf - (activeProperty.rect.h // 2), activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf + activeProperty.rect.h, activeProperty.rect.h + 10 * sf), 2 * sf)
 		else:
 			DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf, activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf, activeProperty.rect.h + 10 * sf), 2 * sf)
+
+	for inspection in pinnedInspections:
+		inspection.Draw()
+
+	# draw gui objects
+	DrawGui()
+
+	if inspectMode:
+		Inspect()
 
 	for objMenu in objectMenus:
 		if gameState in objMenu.activeSurface or objMenu.activeSurface == "all":
@@ -759,26 +811,22 @@ def DrawLoop():
 			if menu.parentObject == activeProperty:
 				menu.Draw()
 
-	if inspectMode:
-		Inspect()
-
-	for inspection in pinnedInspections:
-		inspection.Draw()
 
 	pg.display.update()
 
 # quit program
-def Quit():
+def Quit(bypassSaveSuccess=False):
 	global running
 	saveName = saveObjs.get("saveFileName").text
-	saveSuccess = True # change to false
+	saveSuccess = False # change to false
 	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
 		saveSuccess = Save(saveName)
 
-	if saveSuccess:
+	if saveSuccess or bypassSaveSuccess or len(allObjects) == 0:
 		running = False
-
-Rescale(sf, rescaleScreen=False)
+	else:
+		CreateMessageBox("Confirm exit!", "\nYou are about to exit without saving!\n\nAre you sure you want to continue?", {"name": "confirmExit", "rect": (width // 2 - 200, height // 2 - 90, 400, 180), "fontSize": 20, "textData": {"alignText": "center-top"}, "drawData": {"borderWidth": 2, "roundedCorners": True, "roundness": 15}, "input": {"messageDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "messageText": {"alignText": "center-top", "multiline": True, "fontSize": 18}, "confirmDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "confirmText": {"alignText": "center", "fontSize": 14}, "cancelDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "cancelText": {"alignText": "center", "fontSize": 14}}})
+		SwapInspection(False)
 
 # destroy an attribute
 def DestroyAttribute(attribute):
@@ -865,7 +913,7 @@ def Inspect():
 			inspection = obj
 			break
 
-	pg.draw.circle(screen, red, pg.mouse.get_pos(), 1*sf)
+	pg.draw.circle(screen, red, pg.mouse.get_pos(), 1 * sf)
 
 	texts = ""
 	numberOfLines = 0
@@ -913,24 +961,41 @@ def Inspect():
 		numberOfLines += 4
 	except AttributeError:
 		pass
+
 	if not createdInspection:
-		inspectionLabel = Label(screen, type(inspection).__name__, (pg.mouse.get_pos()[0] // sf, pg.mouse.get_pos()[1] // sf, 100, (numberOfLines * 6) + 4), (darkGray, lightGray), texts, ("arial", 6, white), textData = {"multiline": True, "isScrollable": False, "alignText": "center-top"}, lists=[])
+		inspectionLabel = Inspector(screen, type(inspection).__name__, (pg.mouse.get_pos()[0] // sf, pg.mouse.get_pos()[1] // sf, 100, (numberOfLines * 6) + 4), (darkGray, lightGray), inspection, texts, ("arial", 6, white), textData = {"multiline": True, "isScrollable": False, "alignText": "center-top"}, lists=[])
 		createdInspection = True
+
 	inspectionLabel.Draw()
 
-
+# pin an inspected object
 def PinInspection():
 	if inspectionLabel not in pinnedInspections:
 		pinnedInspections.append(inspectionLabel)
 
-
+# remove pinned inspections
 def RemoveInspections():
 	global pinnedInspections
 	pinnedInspections = []
 
 # handle events
-def ButtonPress(event):
+def HandleEvents(event):
 	global objType, activeProperty
+	# handle gui events
+	HandleGUI(event)
+
+	# handle object menus
+	for objMenu in objectMenus:
+		if gameState in objMenu.activeSurface or objMenu.activeSurface == "all":
+			objMenu.HandleEvent(event)
+
+	# handle property menus
+	for menu in propertiesMenus:
+		if gameState in menu.activeSurface or menu.activeSurface == "all":
+			if menu.parentObject == activeProperty:
+				menu.HandleEvent(event)
+
+	mainCamera.HanldeEvent(event)
 
 	# create a new object to edit
 	if event.type == pg.MOUSEBUTTONDOWN:
@@ -944,12 +1009,13 @@ def ButtonPress(event):
 						if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
 							Save(saveName)
 
-			# load data
+				# load data
 				if saveObjs.get(obj).name == "confirmLoad":
 					if saveObjs.get(obj).active:
 						loadName = saveObjs.get("saveFileName").text
 						if loadName != "" and loadName != saveObjs.get("saveFileName").splashText:
 							Load(loadName)
+
 		for objMenu in objectMenus:
 			if objMenu.name == "objectMenu":
 				if objMenu.activeOption != None:
@@ -959,23 +1025,36 @@ def ButtonPress(event):
 						objMenu.activeOption.active = False
 						return
 
-	# change the active property to the clicked object
+		# change the active property to the clicked object
 		# right click
 		if event.button == 3:
 			for obj in allObjects:
 				if obj.rect.collidepoint(pg.mouse.get_pos()):
 					if activeProperty == None:
 						activeProperty = obj
+						break
 					else:
 						activeProperty = None
-					break
+						break
 				else:
 					activeProperty = None
+					break
 
+		for message in allMessageBoxs:
+			if message.name == "confirmExit":
+				message.HandleEvent(event)
+				message.cancelButton.HandleEvent(event)
+				message.confirmButton.HandleEvent(event)
+				if message.cancelButton.active:
+					allMessageBoxs.remove(message)
+					break
+				if message.confirmButton.active:
+					Quit(True)
+					break
 
 	if event.type == pg.KEYDOWN:
 		# change camera colors
-		if pg.key.get_pressed()[pg.K_SPACE] and (pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]):
+		if pg.key.get_pressed()[pg.K_SPACE] and (pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_RSHIFT]):
 			mainCamera.SwitchColors()
 
 		# destroy a property menu
@@ -994,9 +1073,9 @@ def ButtonPress(event):
 				CreatePropertyMenu(objectShortcuts.get(event.key))
 
 # save
-def Save(fileName):
+def Save(fileName, saveFolder=savePath):
 	# get name for saved obj
-	CheckSaveFolder()
+	CheckSaveFolder(saveFolder)
 	codeLines = ""
 	for obj in allObjects:
 		if obj.name != "":
@@ -1006,15 +1085,34 @@ def Save(fileName):
 
 		codeLines += f"{ProcessObject(obj, name)}\n"
 
-	with open(savePath + fileName + ".py", "w") as file:
+	with open(saveFolder + fileName + ".py", "w") as file:
 		file.write(codeLines)
 
 	return True
 
+# auto save every minute
+def AutoSave():
+	global lastSave, autoSaveCounter
+	date = dt.datetime.now()
+	if lastSave.minute != date.minute and lastSave.second == date.second and len(allObjects) > 0:
+		saveName = f"{date.year}-{date.month}-{date.day}-{date.hour}-{date.minute}-{autoSaveCounter}"
+		Save(saveName, autoSavePath)
+		lastSave = date
+		autoSaveCounter += 1
 
-def CheckSaveFolder():
-	if not os.path.isdir('./saves'):
-		os.mkdir("./saves")
+# check if save folders exist
+def CheckSaveFolder(saveFolder):
+	if not os.path.isdir(f'./{saveFolder}'):
+		os.mkdir(f"./{saveFolder}")
+
+# Show messages to user
+def CreateMessageBox(messageTitle, message, messageBoxData):
+	remove = []
+	for obj in allMessageBoxs:
+		remove.append(obj)
+	for obj in remove:
+		allMessageBoxs.remove(obj)
+	MessageBox(screen, messageBoxData["name"], messageBoxData["rect"], (lightBlack, darkWhite, lightRed), messageTitle, message, ("arial", messageBoxData["fontSize"], white), drawData=messageBoxData["drawData"], textData=messageBoxData["textData"], inputData=messageBoxData["input"], lists=[allMessageBoxs])
 
 # process objects into lines of code
 def ProcessObject(obj, name):
@@ -1132,6 +1230,13 @@ def ProcessObject(obj, name):
 	codeLine = f'{type(obj).__name__}({args})'
 	return codeLine
 
+# swap inspection mode
+def SwapInspection(inspect):
+	global inspectMode
+	inspectMode = inspect
+	pg.mouse.set_visible(not inspect)
+
+Rescale(sf, rescaleScreen=False)
 
 # get object data
 objects = []
@@ -1154,10 +1259,10 @@ mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 200, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 24, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, lists=[saveObjs, allDropDowns])
 confirmSave = Button(screen, "confirmSave", (350, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 
-
 while running:
 	# tick clock at fps
 	clock.tick_busy_loop(fps)
+	AutoSave()
 	if debugMode:
 		print(clock.get_fps())
 
@@ -1173,8 +1278,7 @@ while running:
 
 			# toggle inspect mode
 			if event.key == pg.K_F2:
-				inspectMode = not inspectMode
-				pg.mouse.set_visible(not inspectMode)
+				SwapInspection(not inspectMode)
 
 			# toggle debug mode
 			if event.key == pg.K_F3:
@@ -1189,26 +1293,13 @@ while running:
 					if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
 						RemoveInspections()
 
-		# handle gui events
-		HandleGUI(event)
-
 		if inspectMode:
 			createdInspection = False
 
-		# handle object menus
-		for objMenu in objectMenus:
-			if gameState in objMenu.activeSurface or objMenu.activeSurface == "all":
-				objMenu.HandleEvent(event)
+		for inspector in pinnedInspections:
+			inspector.Update()
 
-		# handle property menus
-		for menu in propertiesMenus:
-			if gameState in menu.activeSurface or menu.activeSurface == "all":
-				if menu.parentObject == activeProperty:
-					menu.HandleEvent(event)
-
-		mainCamera.HanldeEvent(event)
-
-		ButtonPress(event)
+		HandleEvents(event)
 
 	mainCamera.Update()
 
