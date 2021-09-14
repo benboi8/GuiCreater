@@ -27,6 +27,14 @@ allObjects = []
 # save objects
 saveObjs = {}
 
+# key binding objs
+keyBindingObjs = []
+rebindingKeys = False
+
+# settings
+userSettings = "deafultSettings.json"
+customUserSettings = "userSettings.json"
+
 # object being edited
 activeProperty = None
 
@@ -54,7 +62,7 @@ objectShortcuts = {
 	pg.K_5: "Button",
 	pg.K_6: "Slider",
 	pg.K_7: "Switch",
-	pg.K_8: "MultiSelctButton",
+	pg.K_8: "MultiSelectButton",
 	pg.K_9: "DropDownMenu",
 
 	pg.K_KP1: "Box",
@@ -64,21 +72,35 @@ objectShortcuts = {
 	pg.K_KP5: "Button",
 	pg.K_KP6: "Slider",
 	pg.K_KP7: "Switch",
-	pg.K_KP8: "MultiSelctButton",
+	pg.K_KP8: "MultiSelectButton",
 	pg.K_KP9: "DropDownMenu",
 }
 
 objectShortcutDisplay = {
-	"Box": "1",
-	"ImageFrame": "2",
-	"Label": "3",
-	"TextInputBox": "4",
-	"Button": "5",
-	"Slider": "6",
-	"Switch": "7",
-	"MultiSelctButton": "8",
-	"DropDownMenu": "9"
+	"1": "Box",
+	"2": "Image frame",
+	"3": "Label",
+	"4": "Text input box",
+	"5": "Button",
+	"6": "Slider",
+	"7": "Switch",
+	"8": "Multi-select button",
+	"9": "Drop-down menu"
 }
+
+objTypeDisplay = {
+	"Box": "Box",
+	"Image frame": "ImageFrame",
+	"Label": "Label",
+	"Text input box": "TextInputBox",
+	"Button": "Button",
+	"Slider": "Slider",
+	"Switch": "Switch",
+	"Multi-select button": "MultiSelectButton",
+	"Drop-down menu": "DropDownMenu"
+}
+
+shorcuts = {}
 
 # camera
 class Camera(Box):
@@ -106,15 +128,14 @@ class Camera(Box):
 			# add the difference in position and the object
 			self.differences.append((obj.rect.x - self.rect.x, obj.rect.y - self.rect.y, obj))
 
+	def ResetPosition(self):
+		self.CreateDifferences()
+		self.Move((0, 0))
+
 	def HanldeEvent(self, event):
 		# if left ctrl is pressed set can move to true
 		if event.type == pg.KEYDOWN:
 			self.canMove = event.mod and event.key == pg.K_LCTRL
-
-			# reset the camera position to the top left
-			if pg.key.get_pressed()[pg.K_SPACE] and (pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]):
-				self.CreateDifferences()
-				self.Move((0, 0))
 
 		# check if camera should be moving
 		if self.canMove:
@@ -143,7 +164,6 @@ class Camera(Box):
 			self.Move()
 		else:
 			self.gotStartPos = False
-
 
 	def Move(self, pos=None):
 		if pos == None:
@@ -736,12 +756,13 @@ class Properties(DropDownMenu):
 
 		# update texts
 		self.name = self.parentObject.name
-		if self.parentObject.name != "":
-			self.text = f"{self.parentObject.name} - Properties"
-			self.UpdateTextRect()
-		else:
-			self.text = f"{self.objType} - Properties"
-			self.UpdateTextRect()
+
+		for key in objTypeDisplay:
+			if objTypeDisplay[key] == self.objType:
+				self.objTypeName = key
+
+		self.text = f"{self.objTypeName} - Properties"
+		self.UpdateTextRect()
 
 	def Scroll(self, direction, scrollAmount=0):
 		if scrollAmount == 0:
@@ -793,11 +814,14 @@ def DrawLoop():
 		else:
 			DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf, activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf, activeProperty.rect.h + 10 * sf), 2 * sf)
 
+	# draw gui objects
+	DrawGui()
+
 	for inspection in pinnedInspections:
 		inspection.Draw()
 
-	# draw gui objects
-	DrawGui()
+	for obj in keyBindingObjs:
+		obj.Draw()
 
 	if inspectMode:
 		Inspect()
@@ -811,12 +835,12 @@ def DrawLoop():
 			if menu.parentObject == activeProperty:
 				menu.Draw()
 
-
 	pg.display.update()
 
 # quit program
 def Quit(bypassSaveSuccess=False):
 	global running
+	CreateKeyBindingsInfo(True)
 	saveName = saveObjs.get("saveFileName").text
 	saveSuccess = False # change to false
 	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
@@ -825,7 +849,7 @@ def Quit(bypassSaveSuccess=False):
 	if saveSuccess or bypassSaveSuccess or len(allObjects) == 0:
 		running = False
 	else:
-		CreateMessageBox("Confirm exit!", "\nYou are about to exit without saving!\n\nAre you sure you want to continue?", {"name": "confirmExit", "rect": (width // 2 - 200, height // 2 - 90, 400, 180), "fontSize": 20, "textData": {"alignText": "center-top"}, "drawData": {"borderWidth": 2, "roundedCorners": True, "roundness": 15}, "input": {"messageDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "messageText": {"alignText": "center-top", "multiline": True, "fontSize": 18}, "confirmDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "confirmText": {"alignText": "center", "fontSize": 14}, "cancelDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "cancelText": {"alignText": "center", "fontSize": 14}}})
+		CreateMessageBox("Confirm exit!", "\nYou are about to exit without saving!\n\nAre you sure you want to continue?", {"name": "confirmExit", "rect": (width // 2 - 200, height // 2 - 90, 400, 180), "fontSize": 20, "textData": {"alignText": "center-top"}, "drawData": {"borderWidth": 2, "roundedCorners": True, "roundness": 15}, "input": {"messageDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "messageText": {"alignText": "center-top", "multiline": True, "fontSize": 18}, "confirmDraw": {"borderWidth": 1.5, "roundness": 5, "roundedCorners": True}, "confirmText": {"alignText": "center", "fontSize": 14}, "cancelDraw": {"borderWidth": 1.5, "roundness": 5, "roundedCorners": True}, "cancelText": {"alignText": "center", "fontSize": 14}}})
 		SwapInspection(False)
 
 # destroy an attribute
@@ -867,8 +891,8 @@ def CreateObject(objType):
 	elif objType == "Switch":
 		obj = Switch(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
-	elif objType == "MultiSelctButton":
-		obj = MultiSelctButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+	elif objType == "MultiSelectButton":
+		obj = MultiSelectButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
 	elif objType == "DropDownMenu":
 		obj = DropDownMenu(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
@@ -898,7 +922,13 @@ def CreatePropertyMenu(objType, newObj=None):
 
 	if newObj == None:
 		newObj = CreateObject(objType)
-	Properties(screen, objType, (width - 160, 0, 160, height), (lightBlack, darkWhite, lightRed), f"{objType} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
+
+	for name in objTypeDisplay:
+		if objTypeDisplay[name] == objType:
+			objTypeName = name
+			break
+
+	Properties(screen, objType, (width - 160, 0, 160, height), (lightBlack, darkWhite, lightRed), f"{objTypeName} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
 	activeProperty = newObj
 
 	mainCamera.CreateDifferences()
@@ -920,8 +950,11 @@ def Inspect():
 	try:
 		texts += f"-------General-------\\n"
 		texts += f"Name: {inspection.name if inspection.name != '' else str(type(inspection).__name__)}\\n"
-		texts += f"Pos: x:{inspection.rect.x//sf - mainCamera.rect.x//sf}, y:{inspection.rect.y//sf - mainCamera.rect.y//sf}\\n"
-		texts += f"Size: w:{inspection.rect.w//sf}, h:{inspection.rect.h//sf}\\n"
+		if inspection == mainCamera:
+			texts += f"Pos: x:{inspection.rect.x // sf}, y:{inspection.rect.y // sf}\\n"
+		else:
+			texts += f"Pos: x:{inspection.rect.x // sf - mainCamera.rect.x // sf}, y:{inspection.rect.y // sf - mainCamera.rect.y // sf}\\n"
+		texts += f"Size: w:{inspection.rect.w // sf}, h:{inspection.rect.h // sf}\\n"
 		texts += f"Foreground color: {inspection.foregroundColor}\\n"
 		texts += f"Background color: {inspection.backgroundColor}\\n"
 		numberOfLines += 6
@@ -932,7 +965,7 @@ def Inspect():
 			texts += f"------Image Data------\\n"
 			numberOfLines += 1
 		texts += f"Image name: {inspection.imageName}\\n"
-		texts += f"Image size: {inspection.ogSize*sf}\\n"
+		texts += f"Image size: {inspection.ogSize * sf}\\n"
 		texts += f"Frame rate: {inspection.frameRate}\\n"
 		texts += f"Is animation: {inspection.isAnimation}\\n"
 		texts += f"Number of frames: {inspection.numOfFrames}\\n"
@@ -945,7 +978,7 @@ def Inspect():
 			numberOfLines += 1
 		texts += f"Font color: {inspection.fontColor}\\n"
 		texts += f"Font name: {inspection.fontName}\\n"
-		texts += f"Text size: {inspection.ogFontSize*sf}\\n"
+		texts += f"Text size: {inspection.ogFontSize * sf}\\n"
 		texts += f"Align text: {inspection.alignText}\\n"
 		numberOfLines += 4
 	except AttributeError:
@@ -980,7 +1013,16 @@ def RemoveInspections():
 
 # handle events
 def HandleEvents(event):
-	global objType, activeProperty
+	global objType, activeProperty, rebindingKeys, debugMode
+	for obj in keyBindingObjs:
+		if "resetToDefault" == obj.name:
+			if obj.active:
+				ResetUserSettings()
+
+		elif "rebindKey" in obj.name:
+			if obj.active:
+				rebindingKeys = True
+
 	# handle gui events
 	HandleGUI(event)
 
@@ -1005,9 +1047,7 @@ def HandleEvents(event):
 			for obj in saveObjs:
 				if saveObjs.get(obj).name == "confirmSave":
 					if saveObjs.get(obj).active:
-						saveName = saveObjs.get("saveFileName").text
-						if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
-							Save(saveName)
+						Save()
 
 				# load data
 				if saveObjs.get(obj).name == "confirmLoad":
@@ -1016,12 +1056,17 @@ def HandleEvents(event):
 						if loadName != "" and loadName != saveObjs.get("saveFileName").splashText:
 							Load(loadName)
 
+			for obj in keyBindingObjs:
+				if obj.name == "keyBindings":
+					if obj.active:
+						CreateKeyBindingsInfo()
+
 		for objMenu in objectMenus:
 			if objMenu.name == "objectMenu":
 				if objMenu.activeOption != None:
 					if objMenu.activeOption.active:
 						objType = objMenu.activeOption.text.split(" - ")[1]
-						CreatePropertyMenu(objType)
+						CreatePropertyMenu(objTypeDisplay[objType])
 						objMenu.activeOption.active = False
 						return
 
@@ -1053,40 +1098,190 @@ def HandleEvents(event):
 					break
 
 	if event.type == pg.KEYDOWN:
-		# change camera colors
-		if pg.key.get_pressed()[pg.K_SPACE] and (pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_RSHIFT]):
-			mainCamera.SwitchColors()
+		# toggle debug mode
+		if event.key == pg.K_F3:
+			debugMode = not debugMode
 
-		# destroy a property menu
-		if pg.key.get_pressed()[pg.K_DELETE] and (pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]):
-			if activeProperty != None:
-				for menu in propertiesMenus:
-					if menu.parentObject == activeProperty:
-						DestroyAttribute(menu.attributes[0])
 
-		# create object with keyboard shortcuts
-		if event.key in objectShortcuts:
-			if activeProperty == None:
-				for obj in saveObjs:
-					if saveObjs.get(obj).active:
+		for obj in allGUIObjects:
+			if gameState in obj.activeSurface or obj.activeSurface == "all":
+				if type(obj) == TextInputBox:
+					if obj.active:
 						return
-				CreatePropertyMenu(objectShortcuts.get(event.key))
+
+		keyBind = GetKeyName(event)
+		if keyBind != None:
+			if keyBind in shorcuts:
+				name = shorcutFunctions[shorcuts[keyBind]["name"]]["name"]
+				args = shorcutFunctions[shorcuts[keyBind]["name"]]["args"]
+
+				print(f'{name}({args})')
+
+				if "." in name:
+					getattr(globals()[name.split(".")[0]], name.split(".")[1])()
+				else:
+					if args != "":
+						if args == "inspectMode":
+							args = not inspectMode
+						globals()[name](args)
+					else:
+						globals()[name]()
+
+# delete gui object
+def DeleteObject():
+	if activeProperty != None:
+		for menu in propertiesMenus:
+			if menu.parentObject == activeProperty:
+				DestroyAttribute(menu.attributes[0])
+
+# get key pressed name
+def GetKeyName(event):
+	keyName = str(pg.key.name(event.key))
+	with open("nonAllowedRebindKeys.txt", "r") as nonAllowedKeysFile:
+		nonAllowedKeys = nonAllowedKeysFile.read()
+		nonAllowedKeysFile.close()
+
+	for key in nonAllowedKeys.split("\n"):
+		if key == keyName:
+			return
+
+	keyBind = ""
+	if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
+		keyBind += "ctrl + "
+	if pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_RSHIFT]:
+		keyBind += "shift + "
+	if pg.key.get_pressed()[pg.K_LALT] or pg.key.get_pressed()[pg.K_RALT]:
+		keyBind += "alt + "
+
+	if len(keyName) >= 3:
+		print(keyName[0], keyName[2])
+		if keyName[0] == "[" and keyName[2] == "]":
+			keyBind += keyName.strip("[]")
+		else:
+			keyBind += keyName
+	else:
+		keyBind += keyName
+
+	return keyBind
+
+# reset custom settings
+def ResetUserSettings():
+	with open(userSettings, "r") as settingsFile:
+		settings = json.load(settingsFile)
+		settingsFile.close()
+
+	with open(customUserSettings, "w") as settingsFile:
+		json.dump(settings, fp=settingsFile, indent=2)
+		settingsFile.close()
+
+	CreateKeyBindingsInfo()
+	CreateKeyBindingsInfo()
+
+# create keybindings info
+def CreateKeyBindingsInfo(destroy=False):
+	global keyBindingObjs
+	remove = []
+	if len(keyBindingObjs) > 1 or destroy:
+		for obj in keyBindingObjs[1:]:
+			remove.append(obj)
+
+		for obj in remove:
+			if obj in allLabels:
+				allLabels.remove(obj)
+
+			if obj in allButtons:
+				allButtons.remove(obj)
+
+		keyBindingObjs = keyBindingObjs[:1]
+	else:
+		Label(screen, "boundingBox", (50, 50, width - 100, height - 100), (lightBlack, darkWhite), "Key bindings", ("arial", 14, white), textData={"alignText": "center-top"}, drawData={"roundedCorners": True, "roundness": 20}, lists=[keyBindingObjs, allLabels])
+		Button(screen, "resetToDefault", (710, 50, 100, 25), (lightBlack, darkWhite, lightRed), "Reset to default", ("arial", 12, white), isHoldButton=True, drawData={"roundedCorners": True, "roundness": 5}, lists=[keyBindingObjs, allButtons])
+
+		with open(customUserSettings, "r") as settingsFile:
+			settings = json.load(settingsFile)
+			settingsFile.close()
+
+		x = 0
+		h = 13
+		for i, name in enumerate(settings):
+			if settings[name]["rank"] >= h:
+				x = 415
+			else:
+				x = 0
+			Label(screen, settings[name]["name"], (x + 60, 80 + ((settings[name]["rank"] % h) * 23), 150, 20), (lightBlack, darkWhite), settings[name]["name"], ("arial", 11, white), drawData={"roundedCorners": True, "roundness": 5}, lists=[keyBindingObjs, allLabels])
+			Label(screen, f"keyBind-{name}", (x + 215, 80 + ((settings[name]["rank"] % h) * 23), 135, 20), (lightBlack, darkWhite), name, ("arial", 11, white), drawData={"roundedCorners": True, "roundness": 5}, lists=[keyBindingObjs, allLabels])
+			Button(screen, f"rebindKey+{settings[name]['name']}", (x + 355, 80 + ((settings[name]["rank"] % h) * 23), 40, 20), (lightBlack, darkWhite, lightRed), "Rebind", ("arial", 11, white), isHoldButton=False, drawData={"roundedCorners": True, "roundness": 5}, lists=[keyBindingObjs, allButtons])
+
+	SetKeyBinds()
+
+# rebind shortcut keys
+def RebindKeys(event):
+	global rebindingKeys
+	if event.type == pg.KEYDOWN:
+		if event.key == pg.K_ESCAPE:
+			rebindingKeys = False
+			for obj in keyBindingObjs:
+				if "rebindKey" in obj.name:
+					obj.active = False
+			return
+
+		keyName = str(pg.key.name(event.key))
+		keyBind = GetKeyName(event)
+
+		with open(customUserSettings, "r") as settingsFile:
+			settings = json.load(settingsFile)
+			settingsFile.close()
+
+		for key in settings:
+			if key == keyBind:
+				return
+
+		for obj in keyBindingObjs:
+			if "rebindKey" in obj.name:
+				if obj.active:
+
+					for key in settings:
+						if settings[key]["name"] == obj.name.split("+")[1]:
+							oldKey = key
+
+					if keyBind not in settings:
+						settings[keyBind] = settings[oldKey]
+						del settings[oldKey]
+
+					with open(customUserSettings, "w") as settingsFile:
+						json.dump(settings, fp=settingsFile, indent=2)
+						settingsFile.close()
+
+				obj.active = False
+
+		rebindingKeys = False
+
+		for obj in keyBindingObjs:
+			if "keyBind-" in obj.name:
+				if obj.name.split("-")[1] == oldKey:
+					obj.name = f"keyBind-{keyBind}"
+					obj.UpdateText(keyBind, obj.ogFontObj)
 
 # save
-def Save(fileName, saveFolder=savePath):
+def Save(saveName=None, saveFolder=savePath):
 	# get name for saved obj
 	CheckSaveFolder(saveFolder)
-	codeLines = ""
-	for obj in allObjects:
-		if obj.name != "":
-			name = obj.name
-		else:
-			name = type(obj).__name__
 
-		codeLines += f"{ProcessObject(obj, name)}\n"
+	if saveName == None:
+		saveName = saveObjs.get("saveFileName").text
 
-	with open(saveFolder + fileName + ".py", "w") as file:
-		file.write(codeLines)
+	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
+		codeLines = ""
+		for obj in allObjects:
+			if obj.name != "":
+				name = obj.name
+			else:
+				name = type(obj).__name__
+
+			codeLines += f"{ProcessObject(obj, name)}\n"
+
+		with open(saveFolder + saveName + ".py", "w") as file:
+			file.write(codeLines)
 
 	return True
 
@@ -1124,7 +1319,7 @@ def ProcessObject(obj, name):
 		Button: allButtons,
 		Slider: allSliders,
 		Switch: allSwitchs,
-		MultiSelctButton: allMultiButtons,
+		MultiSelectButton: allMultiButtons,
 		DropDownMenu: allDropDowns
 	}
 
@@ -1210,7 +1405,7 @@ def ProcessObject(obj, name):
 				"startValue": obj.startValue
 			}
 
-		if type(obj) == MultiSelctButton:
+		if type(obj) == MultiSelectButton:
 			inputData = {
 				"optionNames": obj.optionNames,
 				"optionAlignText": obj.optionAlignText,
@@ -1224,7 +1419,7 @@ def ProcessObject(obj, name):
 			if type(obj) == DropDownMenu:
 				inputData["inputIsHoldButton"] = obj.inputIsHoldButton
 
-		if type(obj) in [TextInputBox, Button, Slider, MultiSelctButton, DropDownMenu]:
+		if type(obj) in [TextInputBox, Button, Slider, MultiSelectButton, DropDownMenu]:
 			args += f', inputData = {inputData}'
 
 	codeLine = f'{type(obj).__name__}({args})'
@@ -1236,7 +1431,18 @@ def SwapInspection(inspect):
 	inspectMode = inspect
 	pg.mouse.set_visible(not inspect)
 
+# set key binds
+def SetKeyBinds():
+	global shorcuts
+	with open(customUserSettings, "r") as settingsFile:
+		settings = json.load(settingsFile)
+		settingsFile.close()
+
+	shorcuts = settings
+
+
 Rescale(sf, rescaleScreen=False)
+
 
 # get object data
 objects = []
@@ -1244,20 +1450,96 @@ with open(attributeTypesFilePath, "r") as typeDataFile:
 	objectData = json.load(typeDataFile)
 	typeDataFile.close()
 
-for prop in objectData:
+for i, prop in enumerate(objectData):
 	for key in objectShortcutDisplay:
-		if key == prop:
-			prop = f"{objectShortcutDisplay[key]} - {prop}"
-	objects.append(prop)
+		if int(key) == i + 1:
+			obj = f"{key} - {objectShortcutDisplay[key]}"
+			objects.append(obj)
 
-	# object selection
-	DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 35], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
+# object selection
+DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 35], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
 
 # camera
 mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 
-saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 200, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 24, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, lists=[saveObjs, allDropDowns])
-confirmSave = Button(screen, "confirmSave", (350, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+confirmSave = Button(screen, "confirmSave", (460, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 310, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 23, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, drawData={"replaceSplashText": False}, lists=[saveObjs, allDropDowns])
+# confirmLoad = Button(screen, "confirmLoad", (635, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Load", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+
+keyBindingsButton = Button(screen, "keyBindings", (535, 0, 100, 25), (lightBlack, darkWhite, lightRed), "Key bindings", ("arial", 12, white), isHoldButton=True, lists=[keyBindingObjs, allButtons])
+
+SetKeyBinds()
+
+shorcutFunctions = {
+	"Box": {
+		"name": "CreatePropertyMenu",
+		"args": "Box"
+	},
+	"Image frame": {
+		"name": "CreatePropertyMenu",
+		"args": "ImageFrame"
+	},
+	"Label": {
+		"name": "CreatePropertyMenu",
+		"args": "Label"
+	},
+	"Text input box": {
+		"name": "CreatePropertyMenu",
+		"args": "TextInputBox"
+	},
+	"Button": {
+		"name": "CreatePropertyMenu",
+		"args": "Button"
+	},
+	"Slider": {
+		"name": "CreatePropertyMenu",
+		"args": "Slider"
+	},
+	"Switch": {
+		"name": "CreatePropertyMenu",
+		"args": "Switch"
+	},
+	"Multi-select button": {
+		"name": "CreatePropertyMenu",
+		"args": "MultiSelectButton"
+	},
+	"Drop-down menu": {
+		"name": "CreatePropertyMenu",
+		"args": "DropDownMenu"
+	},
+	"Save": {
+		"name": "Save",
+		"args": ""
+	},
+	"Swap camera colors": {
+		"name": "mainCamera.SwitchColors",
+		"args": ""
+	},
+	"Reset camera position": {
+		"name": "mainCamera.ResetPosition",
+		"args": ""
+	},
+	"Move camera": {
+		"name": "Move",
+		"args": ""
+	},
+	"Inspection mode": {
+		"name": "SwapInspection",
+		"args": "inspectMode"
+	},
+	"Pin inspection": {
+		"name": "PinInspection",
+		"args": ""
+	},
+	"ctrl + Middle mouse click": {
+		"name": "RemoveInspections",
+		"args": ""
+	},
+	"Delete object": {
+		"name": "DeleteObject",
+		"args": ""
+	}
+}
 
 while running:
 	# tick clock at fps
@@ -1272,34 +1554,29 @@ while running:
 		if event.type == pg.QUIT:
 			Quit()
 
-		if event.type == pg.KEYDOWN:
-			if event.key == pg.K_ESCAPE:
-				Quit()
+		if not rebindingKeys:
+			if event.type == pg.KEYDOWN:
+				if event.key == pg.K_ESCAPE:
+					Quit()
 
-			# toggle inspect mode
-			if event.key == pg.K_F2:
-				SwapInspection(not inspectMode)
+			if event.type == pg.MOUSEBUTTONDOWN:
+				# pin inspection
+				if event.button == 2:
+					if inspectMode:
+						PinInspection()
 
-			# toggle debug mode
-			if event.key == pg.K_F3:
-				debugMode = not debugMode
+						if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
+							RemoveInspections()
 
-		if event.type == pg.MOUSEBUTTONDOWN:
-			# pin inspection
-			if event.button == 2:
-				if inspectMode:
-					PinInspection()
+			if inspectMode:
+				createdInspection = False
 
-					if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
-						RemoveInspections()
+			for inspector in pinnedInspections:
+				inspector.Update()
 
-		if inspectMode:
-			createdInspection = False
-
-		for inspector in pinnedInspections:
-			inspector.Update()
-
-		HandleEvents(event)
+			HandleEvents(event)
+		else:
+			RebindKeys(event)
 
 	mainCamera.Update()
 

@@ -1,0 +1,24 @@
+left shift
+right shift
+left ctrl
+right ctrl
+left alt
+right alt
+caps lock
+scroll lock
+num lock
+left meta
+right meta
+MediaSelect
+VolumeUp
+VolumeDown
+AudioMute
+AudioStop
+AudioPrev
+AudioPlay
+AudioNext
+Mail
+AC Home
+compose
+App2
+escape
