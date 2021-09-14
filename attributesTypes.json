@@ -1424,10 +1424,10 @@
 			}
 		}
 	},
-	"MultiSelctButton": {
+	"MultiSelectButton": {
 		"inheritance": ["Box", "ImageFrame", "Label", "Button"],
-		"multiSelctButtonData": {
-			"name": "multiSelctButtonData",
+		"MultiSelectButtonData": {
+			"name": "MultiSelectButtonData",
 			"text": "Multi-button data",
 			"type": "Label",
 			"textColor": [45, 45, 45],
@@ -1580,7 +1580,7 @@
 		}
 	},
 	"DropDownMenu": {
-		"inheritance": ["Box", "ImageFrame", "Label", "Button", "MultiSelctButton"],
+		"inheritance": ["Box", "ImageFrame", "Label", "Button", "MultiSelectButton"],
 		"dropDownButtonData": {
 			"name": "dropDownButtonData",
 			"text": "Drop down menu data",
