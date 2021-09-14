@@ -17,6 +17,7 @@ running = True
 
 fps = 60
 
+allGUIObjects = []
 allBoxs = []
 allImageFrames = []
 allLabels = []
@@ -321,6 +322,8 @@ class Box:
 			elif type(listToAppend) == dict:
 				listToAppend[self.name] = self
 
+		allGUIObjects.append(self)
+
 	def Rescale(self):
 		self.rect = pg.Rect(self.ogRect.x * sf, self.ogRect.y * sf, self.ogRect.w * sf, self.ogRect.h * sf)
 		self.borderWidth = self.ogBorderWidth * sf
@@ -430,6 +433,7 @@ class Label(ImageFrame):
 	def __init__(self, surface, name, rect, colors, text, font, textData={}, drawData={}, imageData={}, lists=[allLabels]):
 		self.name = name
 		self.text = text
+		self.ogFontObj = font
 		self.fontName = font[0]
 		self.fontColor = font[2]
 
@@ -534,6 +538,7 @@ class Label(ImageFrame):
 
 	def UpdateText(self, text, font):
 		self.text = str(text)
+		self.ogFontObj = font
 		self.fontName = font[0]
 		self.ogFontSize = font[1]
 		self.fontColor = font[2]
@@ -668,7 +673,7 @@ class TextInputBox(Label):
 				if event.key == pg.K_BACKSPACE:
 					if textLength != 0 and self.text != self.splashText:
 						self.text = self.text[: self.pointer - 1] + self.text[self.pointer :]
-						self.pointer = max(len(self.splashText) + 1, self.pointer - 1)
+						self.pointer = max(len(self.splashText), self.pointer - 1)
 				elif event.key == pg.K_DELETE:
 					if textLength != 0 and self.text != self.splashText:
 						self.text = self.text[: self.pointer] + self.text[self.pointer + 1:]
@@ -726,7 +731,6 @@ class TextInputBox(Label):
 						else:
 							self.text = self.text[: self.pointer] + key + self.text[self.pointer :]
 						self.pointer = min(len(self.text), self.pointer + 1)
-
 
 	def Draw(self):
 		self.RescaleText()
@@ -1105,7 +1109,7 @@ class Switch(Button):
 		self.DrawImage()
 
 
-class MultiSelctButton(Button):
+class MultiSelectButton(Button):
 	def __init__(self, surface, name, rect, colors, text, font, inputData={}, textData={}, drawData={}, imageData={}, lists=[allMultiButtons]):
 		super().__init__(surface, name, rect, colors, text, font, False, textData, drawData, imageData, lists)
 
@@ -1266,7 +1270,7 @@ class MultiSelctButton(Button):
 				break
 
 
-class DropDownMenu(MultiSelctButton):
+class DropDownMenu(MultiSelectButton):
 	def __init__(self, surface, name, rect, colors, text, font, inputData={}, textData={}, drawData={}, imageData={}, lists=[allDropDowns]):
 		self.expandUpwards = drawData.get("expandUpwards", False)
 		self.inputIsHoldButton = inputData.get("inputIsHoldButton", False)
@@ -1432,6 +1436,20 @@ class MessageBox(Label):
 
 
 def DrawGui():
+	hoverInput = False
+	for obj in allGUIObjects:
+		if gameState in obj.activeSurface or obj.activeSurface == "all":
+			if type(obj) == TextInputBox:
+				if obj.rect.collidepoint(pg.mouse.get_pos()):
+					pg.mouse.set_cursor(pg.SYSTEM_CURSOR_IBEAM)
+					hoverInput = True
+
+				if hoverInput:
+					break
+
+	if not hoverInput:
+		pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
+
 	for box in allBoxs:
 		if gameState in box.activeSurface or box.activeSurface == "all":
 			box.Draw()
@@ -1543,12 +1561,11 @@ if __name__ == "__main__":
 		Button(screen, "buttonDemo", (270, 10, 40, 40), (lightBlack, gray, white), "Button", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 15})
 		Slider(screen, "sliderDemo", (320, 10, 150, 40), (lightBlack, gray, white), "", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 10, "moveText": True, "sliderSize": (50, 38)})
 		Switch(screen, "switchDemo", (480, 50, 130, 40), (lightBlack, darkWhite, darkWhite), "Switch", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 15}, textData={"optionsText": ["option 1", "option 2"], "optionsFont": ("arial", 10), "optionsFontColor": [lightRed, lightBlue]})
-		MultiSelctButton(screen, "multiSelctButtonDemo", (10, 60, 80, 100), (lightBlack, darkWhite, lightRed), "MultiSelctButton", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 12}, textData={"alignText": "center-top"}, inputData={"optionNames": ["option 1", "option 2", "option 3"], "optionsSize": (80, 20)})
+		MultiSelectButton(screen, "MultiSelectButtonDemo", (10, 60, 80, 100), (lightBlack, darkWhite, lightRed), "MultiSelectButton", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 12}, textData={"alignText": "center-top"}, inputData={"optionNames": ["option 1", "option 2", "option 3"], "optionsSize": (80, 20)})
 		DropDownMenu(screen, "dropDownMenuDemo", (110, 60, 80, 100), (lightBlack, darkWhite, lightRed), "DropDownMenu", ("arial", 10, white), drawData={"borderWidth": 2, "roundedCorners": True, "roundness": 12, "inactiveY": 15}, textData={"alignText": "center-top"}, inputData={"optionNames": ["option 1", "option 2", "option 3"], "optionsSize": (70, 20)})
 		MessageBox(screen, "messageDemo", (200, 100, 200, 90), (lightBlack, darkWhite, lightRed), "Message title", "Message demo text", ("arial", 10, white), drawData={"borderWidth": 2}, textData={"alignText": "center-top"}, inputData={"messageDraw": {"borderWidth": 1}, "messageText": {"alignText": "center-top"}, "confirmDraw": {"borderWidth": 1}, "confirmText": {"alignText": "center-top"}, "cancelDraw": {"borderWidth": 1}, "cancelText": {"alignText": "center-top"}})
 
 	CreateAllObjects()
-
 
 	while running:
 		for event in pg.event.get():
