@@ -1,4 +1,8 @@
 # auto-py-to-exe
+# add mouse keybinding
+# fix slider button
+# fix multi-select button and drop down menu buttons
+# fix text-input box
 
 # import GUI objects
 import sys
