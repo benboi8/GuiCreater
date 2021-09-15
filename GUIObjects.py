@@ -852,6 +852,20 @@ class Slider(Label):
 		self.drawData = drawData
 		self.inputData = inputData
 		self.imageData = imageData
+
+		self.sliderObj = None
+		self.CreateSliderButton()
+
+	def CreateSliderButton(self):
+		if self.sliderObj != None:
+			if self.sliderObj in allGUIObjects:
+				allGUIObjects.remove(self.sliderObj)
+
+			if self.sliderObj in allButtons:
+				allButtons.remove(self.sliderObj)
+
+		rect = self.ogRect
+
 		if self.sliderSize == (0, 0):
 			if self.ogRect.w > self.ogRect.h:
 				self.sliderSize = ((self.ogRect.w * sf) // 5, self.ogRect.h)
@@ -862,16 +876,16 @@ class Slider(Label):
 			drawData = self.drawData
 			drawData["isFilled"] = True
 			if self.roundedCorners:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1) * 2, self.sliderSize[1] - (self.borderWidth+1) * 2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1) * 2, self.sliderSize[1] - (self.borderWidth+1) * 2), self.colors, "", self.fontObj, True, self.textData, self.drawData, self.imageData)
 			else:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth * 2, self.sliderSize[1] - self.borderWidth*2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth * 2, self.sliderSize[1] - self.borderWidth*2), self.colors, "", self.fontObj, True, self.textData, self.drawData, self.imageData)
 		else:
 			drawData = self.drawData
 			drawData["isFilled"] = True
 			if self.roundedCorners:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1)*2, self.sliderSize[1] - (self.borderWidth+1)*2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth + 1, rect[1] + self.borderWidth + 1, self.sliderSize[0] - (self.borderWidth+1)*2, self.sliderSize[1] - (self.borderWidth+1)*2), self.colors, "", self.fontObj, True, self.textData, self.drawData, self.imageData)
 			else:
-				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth*2, self.sliderSize[1] - self.borderWidth*2), colors, "", font, True, textData, drawData, imageData)
+				self.sliderObj = Button(self.surface, "", (rect[0] + self.borderWidth, rect[1] + self.borderWidth, self.sliderSize[0] - self.borderWidth*2, self.sliderSize[1] - self.borderWidth*2), self.colors, "", self.fontObj, True, self.textData, self.drawData, self.imageData)
 
 	def Rescale(self):
 		self.rect = pg.Rect(self.ogRect.x * sf, self.ogRect.y * sf, self.ogRect.w * sf, self.ogRect.h * sf)
@@ -1125,10 +1139,15 @@ class MultiSelectButton(Button):
 
 		self.activeOption = None
 		self.changed = False
+		self.options = []
 		self.CreateOptions()
 
 	def CreateOptions(self):
+		for obj in self.options:
+			if obj in allGUIObjects:
+				allGUIObjects.remove(obj)
 		self.options = []
+
 		if self.optionsSize == None:
 			rect = pg.Rect(self.ogRect.x + self.borderWidth + 2, self.ogRect.y + (self.textSurface.get_height() // sf) * 2, self.ogRect.w - (self.borderWidth + 4), (self.textSurface.get_height() // sf))
 			self.optionsSize = (self.ogRect.w - (self.borderWidth + 4), (self.textSurface.get_height() // sf))
@@ -1278,7 +1297,12 @@ class DropDownMenu(MultiSelectButton):
 		super().__init__(surface, name, rect, colors, text, font, inputData, textData, drawData, imageData, lists)
 
 	def CreateOptions(self):
+		for obj in self.options:
+			if obj in allGUIObjects:
+				allGUIObjects.remove(obj)
+
 		self.options = []
+
 		if self.optionsSize == None:
 			self.optionsSize = [self.ogRect.w, self.textSurface.get_height()//2]
 		else:
