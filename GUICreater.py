@@ -404,6 +404,9 @@ class Attribute:
 						rect = pg.Rect(rect.x, rect.y, rect.w, value)
 						setattr(self.parentObject, "ogRect", rect)
 
+					if type(self.parentObject) == MultiSelectButton or type(self.parentObject) == DropDownMenu:
+						self.parentObject.CreateOptions()
+
 			# if text box is active check all attributes with text inputs
 			if self.textBox.active:
 				if isNum:
@@ -415,6 +418,11 @@ class Attribute:
 
 							options = getattr(self.parentObject, "optionNames")
 							if len(options) != self.parentObject.numOfOptions:
+
+								for obj in self.parentObject.optionNames:
+									if obj in allGUIObjects:
+										allGUIObjects.remove(obj)
+
 								self.parentObject.optionNames = []
 
 								for i in range(self.parentObject.numOfOptions):
@@ -534,7 +542,10 @@ class Attribute:
 						pass
 				else:
 					value = self.textBox.text
-					if "options" in self.name:
+					if self.name == "numOfOptions":
+						setattr(self.parentObject, self.name, 0)
+
+					elif "options" in self.name:
 						if "FontName" in self.name:
 							setattr(self.parentObject, self.name, str(value))
 
@@ -624,6 +635,7 @@ class Attribute:
 			else:
 				if self.name in self.parentObject.__dict__:
 					setattr(self.parentObject, self.name, value)
+
 
 	def AddAttribute(self, name, value):
 		for obj in self.numOfOptionsList:
@@ -1550,7 +1562,7 @@ while running:
 	clock.tick_busy_loop(fps)
 	AutoSave()
 	if debugMode:
-		print(clock.get_fps())
+		print(clock.get_fps(), len(allObjects), len(allGUIObjects))
 
 	# get all events
 	for event in pg.event.get():
