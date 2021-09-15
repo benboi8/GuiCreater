@@ -1050,20 +1050,6 @@
 			},
 			"inputData": {}
 		},
-		"update": {
-			"name": "update",
-			"text": "Update",
-			"type": "CheckBox",
-			"textColor": [215, 215, 215],
-			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
-			"textData": {
-				"alignText": "center",
-				"fontSize": 10
-			},
-			"inputData": {
-				"active": false
-			}
-		},
 		"isVertical": {
 			"name": "isVertical",
 			"text": "Vertical",
@@ -1105,8 +1091,8 @@
 				"fontSize": 10
 			},
 			"inputData": {
-				"allowedKeysFile": "numberAllowedKeys.txt",
-				"charLimit": 2,
+				"allowedKeysFile": "decimalNumbersAllowedKeys.txt",
+				"charLimit": 3,
 				"splashText": ""
 			}
 		},
@@ -1117,7 +1103,7 @@
 			"textColor": [215, 215, 215],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
 			"textData": {
-				"alignText": "left",
+				"alignText": "center",
 				"fontSize": 10
 			},
 			"inputData": {

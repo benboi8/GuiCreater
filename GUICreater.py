@@ -1,8 +1,10 @@
 # auto-py-to-exe
-# add mouse keybinding
-# fix slider button
-# fix multi-select button and drop down menu buttons
-# fix text-input box
+
+# TODO:
+# 1. fix slider button - 99% - needs testing
+# 2. fix slider attributes - 0%
+# 3. add mouse keybinding - 0%
+# 4. fix text-input cursor - 0%
 
 # import GUI objects
 import sys
@@ -360,15 +362,6 @@ class Attribute:
 		# is input a number
 		isNum = False
 
-		if self.name == "update":
-			if self.checkBox.active:
-				self.checkBox.active = False
-				try:
-					self.parentObject.Update()
-				except AttributeError:
-					return
-				return
-
 		if self.inputType == "TextBox":
 			self.textBox.HandleEvent(event)
 			try:
@@ -406,6 +399,9 @@ class Attribute:
 
 					if type(self.parentObject) == MultiSelectButton or type(self.parentObject) == DropDownMenu:
 						self.parentObject.CreateOptions()
+
+					if type(self.parentObject) == Slider:
+						self.parentObject.CreateSliderButton()
 
 			# if text box is active check all attributes with text inputs
 			if self.textBox.active:
