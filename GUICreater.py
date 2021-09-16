@@ -1,10 +1,12 @@
 # auto-py-to-exe
 
 # TODO:
-# 1. fix slider button - 99% - needs testing
-# 2. fix slider attributes - 0%
-# 3. add mouse keybinding - 0%
-# 4. fix text-input cursor - 0%
+# |1| fix multi-select button and dropdown button - 100%
+# |2| fix slider button - 99% - needs testing
+# |3| fix slider attributes - 0%
+# |4| add mouse keybinding - 0%
+# |5| fix text-input cursor - 0%
+# |6| add loading - 40%
 
 # import GUI objects
 import sys
@@ -58,6 +60,8 @@ createdInspection = False
 
 # is debug mode enabled
 debugMode = False
+
+quiting = False
 
 # keyboard shortcuts
 objectShortcuts = {
@@ -462,7 +466,7 @@ class Attribute:
 											color = getattr(self.parentObject, self.name.split("-")[0])[1]
 											color = (color[0], color[1], max(min(value, 255), 0))
 											setattr(self.parentObject, self.name.split("-")[0], [getattr(self.parentObject, self.name.split("-")[0])[0], color])
-							
+
 							elif "Size" in self.name:
 								if self.name.split("-")[1] == "W":
 									size = getattr(self.parentObject, self.name.split("-")[0])
@@ -832,14 +836,15 @@ def DrawLoop():
 
 	mainCamera.Draw()
 
-	if activeProperty != None:
-		if activeProperty.additive and activeProperty.roundedEdges and not activeProperty.roundedCorners:
-			DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf - (activeProperty.rect.h // 2), activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf + activeProperty.rect.h, activeProperty.rect.h + 10 * sf), 2 * sf)
-		else:
-			DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf, activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf, activeProperty.rect.h + 10 * sf), 2 * sf)
-
 	# draw gui objects
 	DrawGui()
+
+	if activeProperty != None:
+		if not quiting:
+			if activeProperty.additive and activeProperty.roundedEdges and not activeProperty.roundedCorners:
+				DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf - (activeProperty.rect.h // 2), activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf + activeProperty.rect.h, activeProperty.rect.h + 10 * sf), 2 * sf)
+			else:
+				DrawRectOutline(activeProperty.surface, lightRed, (activeProperty.rect.x - 5 * sf, activeProperty.rect.y - 5 * sf, activeProperty.rect.w + 10 * sf, activeProperty.rect.h + 10 * sf), 2 * sf)
 
 	for inspection in pinnedInspections:
 		inspection.Draw()
@@ -863,16 +868,15 @@ def DrawLoop():
 
 # quit program
 def Quit(bypassSaveSuccess=False):
-	global running
+	global running, quiting
 	CreateKeyBindingsInfo(True)
-	saveName = saveObjs.get("saveFileName").text
 	saveSuccess = False # change to false
-	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
-		saveSuccess = Save(saveName)
+	saveSuccess = Save()
 
 	if saveSuccess or bypassSaveSuccess or len(allObjects) == 0:
 		running = False
 	else:
+		quiting = True
 		CreateMessageBox("Confirm exit!", "\nYou are about to exit without saving!\n\nAre you sure you want to continue?", {"name": "confirmExit", "rect": (width // 2 - 200, height // 2 - 90, 400, 180), "fontSize": 20, "textData": {"alignText": "center-top"}, "drawData": {"borderWidth": 2, "roundedCorners": True, "roundness": 15}, "input": {"messageDraw": {"borderWidth": 1.5, "roundness": 10, "roundedCorners": True}, "messageText": {"alignText": "center-top", "multiline": True, "fontSize": 18}, "confirmDraw": {"borderWidth": 1.5, "roundness": 5, "roundedCorners": True}, "confirmText": {"alignText": "center", "fontSize": 14}, "cancelDraw": {"borderWidth": 1.5, "roundness": 5, "roundedCorners": True}, "cancelText": {"alignText": "center", "fontSize": 14}}})
 		SwapInspection(False)
 
@@ -1037,7 +1041,7 @@ def RemoveInspections():
 
 # handle events
 def HandleEvents(event):
-	global objType, activeProperty, rebindingKeys, debugMode
+	global objType, activeProperty, rebindingKeys, debugMode, quiting
 	for obj in keyBindingObjs:
 		if "resetToDefault" == obj.name:
 			if obj.active:
@@ -1074,6 +1078,9 @@ def HandleEvents(event):
 						Save()
 
 				# load
+				if saveObjs.get(obj).name == "confirmLoad":
+					if saveObjs.get(obj).active:
+						Load()
 
 			for obj in keyBindingObjs:
 				if obj.name == "keyBindings":
@@ -1106,6 +1113,7 @@ def HandleEvents(event):
 				message.confirmButton.HandleEvent(event)
 				if message.cancelButton.active:
 					allMessageBoxs.remove(message)
+					quiting = False
 					break
 				if message.confirmButton.active:
 					Quit(True)
@@ -1168,7 +1176,6 @@ def GetKeyName(event):
 		keyBind += "alt + "
 
 	if len(keyName) >= 3:
-		print(keyName[0], keyName[2])
 		if keyName[0] == "[" and keyName[2] == "]":
 			keyBind += keyName.strip("[]")
 		else:
@@ -1282,7 +1289,7 @@ def Save(saveName=None, saveFolder=savePath):
 	CheckSaveFolder(saveFolder)
 
 	if saveName == None:
-		saveName = saveObjs.get("saveFileName").text
+		saveName = saveObjs.get("saveFileName").text.split(":")[1].strip()
 
 	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
 		codeLines = ""
@@ -1296,23 +1303,63 @@ def Save(saveName=None, saveFolder=savePath):
 
 		with open(saveFolder + saveName + ".py", "w") as file:
 			file.write(codeLines)
+			file.close()
 
-	return True
+		return True
 
 # auto save every minute
 def AutoSave():
 	global lastSave, autoSaveCounter
 	date = dt.datetime.now()
 	if lastSave.minute != date.minute and lastSave.second == date.second and len(allObjects) > 0:
-		saveName = f"{date.year}-{date.month}-{date.day}-{date.hour}-{date.minute}-{autoSaveCounter}"
-		Save(saveName, autoSavePath)
+		Save(GetSaveDateName(), autoSavePath)
 		lastSave = date
 		autoSaveCounter += 1
+
+# format the date for a save name
+def GetSaveDateName():
+	date = dt.datetime.now()
+	return f"{date.year}-{date.month}-{date.day}-{date.hour}-{date.minute}-{autoSaveCounter}"
 
 # check if save folders exist
 def CheckSaveFolder(saveFolder):
 	if not os.path.isdir(f'./{saveFolder}'):
 		os.mkdir(f"./{saveFolder}")
+
+# load
+def Load(saveName=None, saveFolder=savePath):
+	CheckSaveFolder(saveFolder)
+
+	if saveName == None:
+		saveName = saveObjs.get("saveFileName").text.split(":")[1].strip()
+
+	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
+		with open(saveFolder + saveName + ".py", "r") as file:
+			fileData = file.read()
+			file.close()
+
+		objType = fileData.split("(")[0]
+		attributes = fileData[len(objType) + 1:].strip("\n")
+
+		variables = {}
+		string = ""
+		numOfBrackets = False
+		for char in attributes:
+			if char == "," and numOfBrackets <= 0:
+				variables[string.split("=")[0]] = string.split("=")[1]
+				string = ""
+			else:
+				if char != " " or numOfBrackets > 0:
+					string += char
+
+				if char == "(" or char == "{" or char == "[":
+					numOfBrackets += 1
+				if char == ")" or char == "}" or char == "]":
+					numOfBrackets -= 1
+		variables[string.split("=")[0]] = string.split("=")[1]
+		for key in variables:
+			print(key, "=", variables[key])
+
 
 # Show messages to user
 def CreateMessageBox(messageTitle, message, messageBoxData):
@@ -1471,14 +1518,14 @@ for i, prop in enumerate(objectData):
 			objects.append(obj)
 
 # object selection
-DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [138, 35], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
+DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, lightRed), "Objects", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"optionNames": objects, "optionAlignText": "center", "optionsSize": [140, 35], "inputIsHoldButton": True, "allowNoSelection": True}, drawData={"inactiveY": 11.5}, lists=[objectMenus])
 
 # camera
 mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 
 confirmSave = Button(screen, "confirmSave", (460, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 310, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 23, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, drawData={"replaceSplashText": False}, lists=[saveObjs, allDropDowns])
-# confirmLoad = Button(screen, "confirmLoad", (635, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Load", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+confirmLoad = Button(screen, "confirmLoad", (635, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Load", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 
 keyBindingsButton = Button(screen, "keyBindings", (535, 0, 100, 25), (lightBlack, darkWhite, lightRed), "Key bindings", ("arial", 12, white), isHoldButton=True, lists=[keyBindingObjs, allButtons])
 
@@ -1559,6 +1606,7 @@ while running:
 	# tick clock at fps
 	clock.tick_busy_loop(fps)
 	AutoSave()
+
 	if debugMode:
 		print(clock.get_fps(), len(allObjects), len(allGUIObjects))
 
