@@ -462,7 +462,7 @@ class Attribute:
 											color = getattr(self.parentObject, self.name.split("-")[0])[1]
 											color = (color[0], color[1], max(min(value, 255), 0))
 											setattr(self.parentObject, self.name.split("-")[0], [getattr(self.parentObject, self.name.split("-")[0])[0], color])
-
+							
 							elif "Size" in self.name:
 								if self.name.split("-")[1] == "W":
 									size = getattr(self.parentObject, self.name.split("-")[0])
@@ -516,6 +516,9 @@ class Attribute:
 								else:
 									setattr(self.parentObject, self.name.split("-")[1], value)
 
+						else:
+							setattr(self.parentObject, self.name, int(value))
+
 					# if attribute is in parent object set the value to the input
 					else:
 						if value != "":
@@ -540,6 +543,15 @@ class Attribute:
 					value = self.textBox.text
 					if self.name == "numOfOptions":
 						setattr(self.parentObject, self.name, 0)
+
+					elif self.name == "ogFontSize":
+						print(value)
+						if value != "":
+							setattr(self.parentObject, self.name, int(value))
+						else:
+							setattr(self.parentObject, self.name, 1)
+						self.parentObject.Rescale()
+
 
 					elif "options" in self.name:
 						if "FontName" in self.name:
@@ -1061,12 +1073,7 @@ def HandleEvents(event):
 					if saveObjs.get(obj).active:
 						Save()
 
-				# load data
-				if saveObjs.get(obj).name == "confirmLoad":
-					if saveObjs.get(obj).active:
-						loadName = saveObjs.get("saveFileName").text
-						if loadName != "" and loadName != saveObjs.get("saveFileName").splashText:
-							Load(loadName)
+				# load
 
 			for obj in keyBindingObjs:
 				if obj.name == "keyBindings":
@@ -1087,15 +1094,10 @@ def HandleEvents(event):
 		if event.button == 3:
 			for obj in allObjects:
 				if obj.rect.collidepoint(pg.mouse.get_pos()):
-					if activeProperty == None:
-						activeProperty = obj
-						break
-					else:
-						activeProperty = None
-						break
+					activeProperty = obj
+					break
 				else:
 					activeProperty = None
-					break
 
 		for message in allMessageBoxs:
 			if message.name == "confirmExit":

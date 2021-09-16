@@ -577,6 +577,7 @@
 			"textColor": [255, 255, 255],
 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
 			"textData": {
+				"allowedKeysFile": "displayTextAllowedKeys.txt",
 				"alignText": "left",
 				"fontSize": 10
 			},

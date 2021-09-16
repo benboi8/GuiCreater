@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import *
 
 def ScaleImage(imagePath, imageScale, newImagePath):
 	image = Image.open(imagePath)
