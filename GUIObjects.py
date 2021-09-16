@@ -1465,14 +1465,14 @@ def DrawGui():
 		if gameState in obj.activeSurface or obj.activeSurface == "all":
 			if type(obj) == TextInputBox:
 				if obj.rect.collidepoint(pg.mouse.get_pos()):
-					pg.mouse.set_cursor(pg.SYSTEM_CURSOR_IBEAM)
+					pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_IBEAM)
 					hoverInput = True
 
 				if hoverInput:
 					break
 
 	if not hoverInput:
-		pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
+		pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_ARROW)
 
 	for box in allBoxs:
 		if gameState in box.activeSurface or box.activeSurface == "all":
