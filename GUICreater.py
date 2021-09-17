@@ -17,7 +17,7 @@ import json
 
 # create screen
 width, height = 870, 440
-sf = 2
+sf = 1
 screen = pg.display.set_mode((width * sf, height * sf))
 
 # save path for data
@@ -1344,6 +1344,10 @@ def Load(saveName=None, saveFolder=savePath):
 		variables = {}
 		string = ""
 		numOfBrackets = False
+		
+		# make recursive
+		# |pass in string to deconstruct and split chars|
+
 		for char in attributes:
 			if char == "," and numOfBrackets <= 0:
 				variables[string.split("=")[0]] = string.split("=")[1]
@@ -1359,6 +1363,9 @@ def Load(saveName=None, saveFolder=savePath):
 		variables[string.split("=")[0]] = string.split("=")[1]
 		for key in variables:
 			print(key, "=", variables[key])
+			if key == "rect":
+				rect = variables[key].strip(" ()").split(",")
+				print(f"x: {rect[0]}, y: {rect[1]}, w: {rect[2]}, h: {rect[3]}")
 
 
 # Show messages to user
