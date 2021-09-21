@@ -7,6 +7,7 @@
 # |4| add mouse keybinding - 0%
 # |5| fix text-input cursor - 0%
 # |6| add loading - 45% - fix drawData/textData/inputData/imageData
+# |7| add config files - 0%
 
 # import GUI objects
 import sys
