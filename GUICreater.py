@@ -5,11 +5,10 @@
 # |2| fix slider button - 99% - needs testing
 # |2| fix slider object - 0%
 # |3| fix slider attributes - 0%
-# |4| add mouse keybinding - 0%
+# |4| add mouse keybinding - 80% - add dynamic event handling for mouse events
 # |5| fix text-input cursor - 0%
-# |6| add loading - 45% - fix drawData/textData/inputData/imageData
-# |7| add config files - 0%
-# |8| fix allowedKeys and nonAllowedKeys in attributes - 0% - change set to string
+# |6| add loading - 90% - testing - numOfOptions doesn't work
+# |7| fix allowedKeys and nonAllowedKeys in attributes - 0% - change set to string
 	# "allowedKeys": {
 	# 			"name": "allowedKeys",
 	# 			"text": "Allowed keys:",
@@ -53,7 +52,7 @@ import json
 
 # create screen
 width, height = 870, 440
-sf = 1
+sf = 2
 screen = pg.display.set_mode((width * sf, height * sf))
 
 # save path for data
@@ -122,6 +121,14 @@ objTypeDisplay = {
 	"Switch": "Switch",
 	"Multi-select button": "MultiSelectButton",
 	"Drop-down menu": "DropDownMenu"
+}
+
+mouseShorcuts = {
+	1: "Left click",
+	2: "Middle click",
+	3: "Right click",
+	4: "Scroll up",
+	5: "Scroll down"
 }
 
 shorcuts = {}
@@ -1178,6 +1185,18 @@ def DeleteObject():
 			if menu.parentObject == activeProperty:
 				DestroyAttribute(menu.attributes[0])
 
+# get key modifiers
+def GetModifiers():
+	mods = ""
+	if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
+		mods += "ctrl + "
+	if pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_RSHIFT]:
+		mods += "shift + "
+	if pg.key.get_pressed()[pg.K_LALT] or pg.key.get_pressed()[pg.K_RALT]:
+		mods += "alt + "
+
+	return mods
+
 # get key pressed name
 def GetKeyName(event):
 	keyName = str(pg.key.name(event.key))
@@ -1189,13 +1208,7 @@ def GetKeyName(event):
 		if key == keyName:
 			return
 
-	keyBind = ""
-	if pg.key.get_pressed()[pg.K_LCTRL] or pg.key.get_pressed()[pg.K_RCTRL]:
-		keyBind += "ctrl + "
-	if pg.key.get_pressed()[pg.K_LSHIFT] or pg.key.get_pressed()[pg.K_RSHIFT]:
-		keyBind += "shift + "
-	if pg.key.get_pressed()[pg.K_LALT] or pg.key.get_pressed()[pg.K_RALT]:
-		keyBind += "alt + "
+	keyBind = GetModifiers()
 
 	if len(keyName) >= 3:
 		if keyName[0] == "[" and keyName[2] == "]":
@@ -1204,6 +1217,17 @@ def GetKeyName(event):
 			keyBind += keyName
 	else:
 		keyBind += keyName
+
+	return keyBind
+
+# get mouse button names
+def GetMouseButtonName(event):
+	keyName = mouseShorcuts.get(event.button, f"Mouse button {event.button}")
+	with open("nonAllowedRebindKeys.txt", "r") as nonAllowedKeysFile:
+		nonAllowedKeys = nonAllowedKeysFile.read()
+		nonAllowedKeysFile.close()
+
+	keyBind = GetModifiers() + keyName
 
 	return keyBind
 
@@ -1271,6 +1295,46 @@ def RebindKeys(event):
 		keyName = str(pg.key.name(event.key))
 		keyBind = GetKeyName(event)
 
+		if keyBind != None:
+			if "ctrl" not in keyName and "alt" not in keyName and "shift" not in keyName:
+				with open(customUserSettings, "r") as settingsFile:
+					settings = json.load(settingsFile)
+					settingsFile.close()
+
+				for key in settings:
+					if key == keyBind:
+						return
+
+				for obj in keyBindingObjs:
+					if "rebindKey" in obj.name:
+						if obj.active:
+
+							for key in settings:
+								if settings[key]["name"] == obj.name.split("+")[1]:
+									oldKey = key
+
+							if keyBind not in settings:
+								settings[keyBind] = settings[oldKey]
+								del settings[oldKey]
+
+							with open(customUserSettings, "w") as settingsFile:
+								json.dump(settings, fp=settingsFile, indent=2)
+								settingsFile.close()
+
+						obj.active = False
+
+				rebindingKeys = False
+
+				for obj in keyBindingObjs:
+					if "keyBind-" in obj.name:
+						if obj.name.split("-")[1] == oldKey:
+							obj.name = f"keyBind-{keyBind}"
+							obj.UpdateText(keyBind, obj.ogFontObj)
+
+	if event.type == pg.MOUSEBUTTONDOWN:
+		keyBind = GetMouseButtonName(event)
+		print(keyBind)
+
 		with open(customUserSettings, "r") as settingsFile:
 			settings = json.load(settingsFile)
 			settingsFile.close()
@@ -1278,6 +1342,9 @@ def RebindKeys(event):
 		for key in settings:
 			if key == keyBind:
 				return
+
+		if keyBind == "Left click" or keyBind == "Right click":
+			return
 
 		for obj in keyBindingObjs:
 			if "rebindKey" in obj.name:
@@ -1295,7 +1362,7 @@ def RebindKeys(event):
 						json.dump(settings, fp=settingsFile, indent=2)
 						settingsFile.close()
 
-				obj.active = False
+			obj.active = False
 
 		rebindingKeys = False
 
@@ -1397,6 +1464,9 @@ def Load(saveName=None, saveFolder=savePath):
 
 				# create new objects
 				obj = CreateObject(objType)
+
+				variablesToAdd = {}
+
 				for key in variables:
 					string = [variables[key]]
 					string = DeconstructString(variables[key], ",", 1, strip='"')
@@ -1432,13 +1502,26 @@ def Load(saveName=None, saveFolder=savePath):
 									stringObj = stringObj.strip("{}")
 									stringKey = stringObj.split(":")[0]
 									stringValue = stringObj.split(":")[1]
+
 								else:
 									stringObj = stringObj[0:-1]
 									stringKey = stringObj.split(":")[0]
-									stringValue = DeconstructString(stringObj, ":,", 2, "{}")[1:]
+									stringValue = DeconstructString(stringObj, ":,", 2, "{}'")[1:]
+									if len(stringValue) > 1:
+										d = {}
+										for i in range(0, len(stringValue), 2):
+											if stringValue[i + 1] == "True":
+												b = True
+											else:
+												b = False
+											d[stringValue[i]] = b
+									else:
+										d = {"topLeft": False, "topRight": False, "bottomLeft": False, "bottomRight": False}
+									stringValue = d
 
 								stringKey = stringKey.strip("'")
-								# print(f"{stringKey} : {stringValue}")
+
+								variablesToAdd[stringKey] = stringValue
 
 						if key == "imageData":
 							for stringObj in variables[key]:
@@ -1453,13 +1536,14 @@ def Load(saveName=None, saveFolder=savePath):
 									stringValue = (int(stringValue[0]), int(stringValue[1]))
 
 								stringKey = stringKey.strip("'")
-								# print(f"{stringKey} : {stringValue}")
+
+								variablesToAdd[stringKey] = stringValue
 
 						if key == "font":
 							fontName, fontSize, fontColor = variables[key]
-							fontColor = f"({fontColor})"
+							fontColor = tuple([int(fontColor.split(", ")[0]), int(fontColor.split(", ")[1]), int(fontColor.split(", ")[2])])
 
-							# print(fontName, fontSize, fontColor)
+							variablesToAdd["font"] = (str(fontName), int(fontSize), fontColor)
 
 						if key == "textData":
 							for stringObj in variables[key]:
@@ -1468,7 +1552,7 @@ def Load(saveName=None, saveFolder=savePath):
 								stringKey = stringKey.strip("'")
 								stringValue = stringValue.strip("'")
 
-								# print(f"{stringKey} : {stringValue}")
+								variablesToAdd[stringKey] = stringValue
 
 						if key == "inputData":
 							for stringObj in variables[key]:
@@ -1479,15 +1563,11 @@ def Load(saveName=None, saveFolder=savePath):
 										stringKey = stringKey.strip("'")
 										stringValue = stringValue.strip("'")
 
-										# print(f"{stringKey} : {stringValue}")
-
 								if objType == "Slider":
 									stringObj = stringObj.strip("{}")
 									stringKey, stringValue = stringObj.split(":")
 									stringKey = stringKey.strip("'")
 									stringValue = stringValue.strip("'")
-
-									# print(f"{stringKey} : {stringValue}")
 
 								if objType == "MultiSelectButton":
 									stringObj = stringObj.strip("{}")
@@ -1495,21 +1575,63 @@ def Load(saveName=None, saveFolder=savePath):
 										stringKey, stringValue = stringObj.split(":")
 										stringKey = stringKey.strip("'")
 										stringValue = stringValue.strip("'")
-
-										print(f"{stringKey} : {stringValue}")
+										if "optionNames" in stringObj:
+											values = []
+											for name in stringValue.split(", "):
+												name = name.strip("[](), '")
+												values.append(name)
+											stringValue = values
 
 									else:
 										stringKey, stringValue = stringObj.split(":")
 										stringKey = stringKey.strip("'")
 										stringValue = stringValue.strip("'")
+										stringValue = (int(stringValue.split(", ")[0].strip("[]()")), int(stringValue.split(", ")[1].strip("[]()")))
 
-										print(f"{stringKey} : {stringValue}")
+								if objType == "DropDownMenu":
+									stringObj = stringObj.strip("{}")
 
-						# print(key)
+									if "optionsSize" not in stringObj:
+										stringKey, stringValue = stringObj.split(":")
+										stringKey = stringKey.strip("'")
+										stringValue = stringValue.strip("'")
+										if "optionNames" in stringObj:
+											values = []
+											for name in stringValue.split(", "):
+												name = name.strip("[](), '")
+												values.append(name)
+											stringValue = values
+
+									else:
+										stringKey, stringValue = stringObj.split(":")
+										stringKey = stringKey.strip("'")
+										stringValue = stringValue.strip("'")
+										stringValue = (int(stringValue.split(", ")[0].strip("[]()")), int(stringValue.split(", ")[1].strip("[]()")))
+
+								variablesToAdd[stringKey] = stringValue
 
 					obj.Rescale()
 
 				CreatePropertyMenu(objType, obj)
+
+				for key in variablesToAdd:
+					try:
+						variablesToAdd[key] = int(variablesToAdd[key])
+					except:
+						try:
+							variablesToAdd[key] = float(variablesToAdd[key])
+						except:
+							if variablesToAdd[key] == "False":
+								variablesToAdd[key] = False
+							if variablesToAdd[key] == "True":
+								variablesToAdd[key] = True
+
+							if variablesToAdd[key] == "None":
+								variablesToAdd[key] = None
+
+					setattr(obj, key, variablesToAdd[key])
+
+					obj.Rescale()
 
 			file.close()
 
@@ -1649,7 +1771,7 @@ def ProcessObject(obj, name):
 				"startValue": obj.startValue
 			}
 
-		if type(obj) == MultiSelectButton:
+		if type(obj) == MultiSelectButton or type(obj) == DropDownMenu:
 			inputData = {
 				"optionNames": obj.optionNames,
 				"optionAlignText": obj.optionAlignText,

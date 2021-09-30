@@ -47,7 +47,7 @@
 		"name": "Reset camera position",
 		"rank": 11
 	},
-	"ctrl + left click": {
+	"ctrl + Left click": {
 		"name": "Move camera",
 		"rank": 12
 	},
@@ -55,11 +55,11 @@
 		"name": "Inspection mode",
 		"rank": 13
 	},
-	"Middle mouse click": {
+	"Middle click": {
 		"name": "Pin inspection",
 		"rank": 14
 	},
-	"ctrl + Middle mouse click": {
+	"ctrl + Middle click": {
 		"name": "Remove pinned inspections",
 		"rank": 15
 	},
