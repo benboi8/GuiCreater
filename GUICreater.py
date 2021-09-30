@@ -3,11 +3,46 @@
 # TODO:
 # |1| fix multi-select button and dropdown button - 100%
 # |2| fix slider button - 99% - needs testing
+# |2| fix slider object - 0%
 # |3| fix slider attributes - 0%
 # |4| add mouse keybinding - 0%
 # |5| fix text-input cursor - 0%
 # |6| add loading - 45% - fix drawData/textData/inputData/imageData
 # |7| add config files - 0%
+# |8| fix allowedKeys and nonAllowedKeys in attributes - 0% - change set to string
+	# "allowedKeys": {
+	# 			"name": "allowedKeys",
+	# 			"text": "Allowed keys:",
+	# 			"type": "TextBox",
+	# 			"textColor": [255, 255, 255],
+	# 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+	# 			"textData": {
+	# 				"alignText": "left",
+	# 				"fontSize": 10
+	# 			},
+	# 			"inputData": {
+	# 				"allowedKeysFile": "displayTextAllowedKeys.txt",
+	# 				"charLimit": 20,
+	# 				"splashText": ""
+	# 			}
+	# 		},
+	# 		"nonAllowedKeys": {
+	# 			"name": "nonAllowedKeys",
+	# 			"text": "Non allowed keys:",
+	# 			"type": "TextBox",
+	# 			"textColor": [255, 255, 255],
+	# 			"colors": [[45, 45, 45], [215, 215, 215], [184, 39, 39]],
+	# 			"textData": {
+	# 				"alignText": "left",
+	# 				"fontSize": 10
+	# 			},
+	# 			"inputData": {
+	# 				"allowedKeysFile": "displayTextAllowedKeys.txt",
+	# 				"charLimit": 20,
+	# 				"splashText": ""
+	# 			}
+	# 		}
+
 
 # import GUI objects
 import sys
@@ -18,7 +53,7 @@ import json
 
 # create screen
 width, height = 870, 440
-sf = 2
+sf = 1
 screen = pg.display.set_mode((width * sf, height * sf))
 
 # save path for data
@@ -65,28 +100,6 @@ debugMode = False
 quiting = False
 
 # keyboard shortcuts
-objectShortcuts = {
-	pg.K_1: "Box",
-	pg.K_2: "ImageFrame",
-	pg.K_3: "Label",
-	pg.K_4: "TextInputBox",
-	pg.K_5: "Button",
-	pg.K_6: "Slider",
-	pg.K_7: "Switch",
-	pg.K_8: "MultiSelectButton",
-	pg.K_9: "DropDownMenu",
-
-	pg.K_KP1: "Box",
-	pg.K_KP2: "ImageFrame",
-	pg.K_KP3: "Label",
-	pg.K_KP4: "TextInputBox",
-	pg.K_KP5: "Button",
-	pg.K_KP6: "Slider",
-	pg.K_KP7: "Switch",
-	pg.K_KP8: "MultiSelectButton",
-	pg.K_KP9: "DropDownMenu",
-}
-
 objectShortcutDisplay = {
 	"1": "Box",
 	"2": "Image frame",
@@ -311,6 +324,9 @@ class Attribute:
 			elif "Option-" in self.name:
 				self.textBox.text = str((getattr(self.parentObject, "optionNames")[int(self.name.split("-")[1].strip(":"))]))
 
+			elif ("allowedKeys" in self.name or "nonAllowedKeys" in self.name) and ("nonAllowedKeysFilePath" not in self.name and "allowedKeysFilePath" not in self.name):
+				self.textBox.text = ""
+
 			else:
 				if "drawData" in self.name or "textData" in self.name or "imageData" in self.name:
 					if self.name.split("-")[1] == "ogSize":
@@ -331,7 +347,7 @@ class Attribute:
 
 		# add a button to check
 		elif self.inputType == "CheckBox":
-			self.checkBox = Button(self.surface, self.name, pg.Rect(self.objectRect.x//sf, self.objectRect.y//sf, self.objectRect.w//sf, self.objectRect.h//sf), (self.backgroundColor, self.foregroundColor, self.inputColor), self.text, (self.fontName, self.fontSize//sf, self.textColor), False, self.textData, {}, inputData=self.inputData, lists=[])
+			self.checkBox = Button(self.surface, self.name, pg.Rect(self.objectRect.x // sf, self.objectRect.y // sf, self.objectRect.w // sf, self.objectRect.h // sf), (self.backgroundColor, self.foregroundColor, self.inputColor), self.text, (self.fontName, self.fontSize // sf, self.textColor), False, self.textData, {}, inputData=self.inputData, lists=[])
 
 	def UpdateRects(self):
 		# original rect
@@ -521,6 +537,9 @@ class Attribute:
 								else:
 									setattr(self.parentObject, self.name.split("-")[1], value)
 
+						elif "allowedKeys" in self.name or "nonAllowedKeys" in self.name and ("nonAllowedKeysFilePath" not in self.name and "allowedKeysFilePath" not in self.name):
+							setattr(self.parentObject, self.name, (set(str(value))))
+
 						else:
 							setattr(self.parentObject, self.name, int(value))
 
@@ -550,7 +569,6 @@ class Attribute:
 						setattr(self.parentObject, self.name, 0)
 
 					elif self.name == "ogFontSize":
-						print(value)
 						if value != "":
 							setattr(self.parentObject, self.name, int(value))
 						else:
@@ -579,6 +597,9 @@ class Attribute:
 
 						setattr(self.parentObject, "optionNames", options)
 						self.parentObject.CreateOptions()
+
+					elif "allowedKeys" in self.name or "nonAllowedKeys" in self.name and ("nonAllowedKeysFilePath" not in self.name and "allowedKeysFilePath" not in self.name):
+						setattr(self.parentObject, self.name, (set(value)))
 
 					elif self.name in self.parentObject.__dict__:
 						setattr(self.parentObject, self.name, str(value))
@@ -648,7 +669,6 @@ class Attribute:
 			else:
 				if self.name in self.parentObject.__dict__:
 					setattr(self.parentObject, self.name, value)
-
 
 	def AddAttribute(self, name, value):
 		for obj in self.numOfOptionsList:
@@ -1132,13 +1152,14 @@ def HandleEvents(event):
 					if obj.active:
 						return
 
+		# create objects witj keyboard shortcuts
 		keyBind = GetKeyName(event)
 		if keyBind != None:
 			if keyBind in shorcuts:
 				name = shorcutFunctions[shorcuts[keyBind]["name"]]["name"]
 				args = shorcutFunctions[shorcuts[keyBind]["name"]]["args"]
 
-				print(f'{name}({args})')
+				# print(f'{name}({args})')
 
 				if "." in name:
 					getattr(globals()[name.split(".")[0]], name.split(".")[1])()
@@ -1322,60 +1343,178 @@ def GetSaveDateName():
 	date = dt.datetime.now()
 	return f"{date.year}-{date.month}-{date.day}-{date.hour}-{date.minute}-{autoSaveCounter}"
 
-# check if save folders exist
+# check if save folder exists make one if it doesn't
 def CheckSaveFolder(saveFolder):
 	if not os.path.isdir(f'./{saveFolder}'):
 		os.mkdir(f"./{saveFolder}")
 
 # load
 def Load(saveName=None, saveFolder=savePath):
+	# check if save folder exists make one if it doesn't
 	CheckSaveFolder(saveFolder)
 
+	# check if there is a save name
 	if saveName == None:
 		saveName = saveObjs.get("saveFileName").text.split(":")[1].strip()
 
+	# check if the save name isn't empty
 	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
+		# remove all current objects   ---   broken
+		r = []
+		for obj in allObjects:
+			r.append(obj)
+		for obj in r:
+			if obj in allObjects:
+				allObjects.remove(obj)
+
+		# open the save file
 		with open(saveFolder + saveName + ".py", "r") as file:
-			fileData = file.read()
+			# get each object
+			for line in file:
+				# get object data
+				objType = line.split("(")[0]
+				attributes = line[len(objType) + 1:].strip("\n")
+
+				variables = {}
+				string = ""
+				numOfBrackets = False
+
+				# split the attributes from the line of code
+				for char in attributes:
+					if char == "," and numOfBrackets <= 0:
+						variables[string.split("=")[0]] = string.split("=")[1]
+						string = ""
+					else:
+						if char != " " or numOfBrackets > 0:
+							string += char
+
+						if char == "(" or char == "{" or char == "[":
+							numOfBrackets += 1
+						if char == ")" or char == "}" or char == "]":
+							numOfBrackets -= 1
+
+				variables[string.split("=")[0]] = string.split("=")[1]
+
+				# create new objects
+				obj = CreateObject(objType)
+				for key in variables:
+					string = [variables[key]]
+					string = DeconstructString(variables[key], ",", 1, strip='"')
+
+					strings = []
+					for strObj in string:
+						strObj = strObj.strip('()"')
+						strings.append(strObj)
+					variables[key] = strings
+
+					# add attributes to the new object
+					if len(variables[key]) == 1:
+						if key == "surface":
+							setattr(obj, key, screen)
+						else:
+							setattr(obj, key, variables[key][0])
+					else:
+						if key == "rect":
+							setattr(obj, "ogRect", pg.Rect(int(variables[key][0]), int(variables[key][1]), int(variables[key][2]), int(variables[key][3])))
+
+						if key == "colors":
+							setattr(obj, "backgroundColor", (int(variables[key][0].split(", ")[0]), int(variables[key][0].split(", ")[1]), int(variables[key][0].split(", ")[2])))
+
+							if len(variables[key]) == 2:
+								setattr(obj, "foregroundColor", (int(variables[key][1].split(", ")[0]), int(variables[key][1].split(", ")[1]), int(variables[key][1].split(", ")[2])))
+							else:
+								setattr(obj, "inactiveColor", (int(variables[key][0].split(", ")[0]), int(variables[key][0].split(", ")[1]), int(variables[key][0].split(", ")[2])))
+								setattr(obj, "activeColor", (int(variables[key][1].split(", ")[0]), int(variables[key][1].split(", ")[1]), int(variables[key][1].split(", ")[2])))
+
+						if key == "drawData":
+							for stringObj in variables[key]:
+								if "activeCorners" not in stringObj:
+									stringObj = stringObj.strip("{}")
+									stringKey = stringObj.split(":")[0]
+									stringValue = stringObj.split(":")[1]
+								else:
+									stringObj = stringObj[0:-1]
+									stringKey = stringObj.split(":")[0]
+									stringValue = DeconstructString(stringObj, ":,", 2, "{}")[1:]
+
+								stringKey = stringKey.strip("'")
+								# print(f"{stringKey} : {stringValue}")
+
+						if key == "imageData":
+							for stringObj in variables[key]:
+								if "size" not in stringObj:
+									stringObj = stringObj.strip("{}")
+									stringKey = stringObj.split(":")[0]
+									stringValue = stringObj.split(":")[1]
+								else:
+									stringObj = stringObj[0:-1]
+									stringKey = stringObj.split(":")[0]
+									stringValue = DeconstructString(stringObj, ":,", 2, "{}()")[1:]
+									stringValue = (int(stringValue[0]), int(stringValue[1]))
+
+								stringKey = stringKey.strip("'")
+								# print(f"{stringKey} : {stringValue}")
+
+						if key == "font":
+							fontName, fontSize, fontColor = variables[key]
+							fontColor = f"({fontColor})"
+
+							# print(fontName, fontSize, fontColor)
+
+						if key == "textData":
+							for stringObj in variables[key]:
+								stringObj = stringObj.strip("{}")
+								stringKey, stringValue = stringObj.split(":")
+								stringKey = stringKey.strip("'")
+								stringValue = stringValue.strip("'")
+
+								# print(f"{stringKey} : {stringValue}")
+
+						if key == "inputData":
+							for stringObj in variables[key]:
+								if objType == "TextInputBox":
+									stringObj = stringObj.strip("{}")
+									if "nonAllowedKeysList" not in stringObj and "allowedKeysList" not in stringObj:
+										stringKey, stringValue = stringObj.split(":")
+										stringKey = stringKey.strip("'")
+										stringValue = stringValue.strip("'")
+
+										# print(f"{stringKey} : {stringValue}")
+
+								if objType == "Slider":
+									stringObj = stringObj.strip("{}")
+									stringKey, stringValue = stringObj.split(":")
+									stringKey = stringKey.strip("'")
+									stringValue = stringValue.strip("'")
+
+									# print(f"{stringKey} : {stringValue}")
+
+								if objType == "MultiSelectButton":
+									stringObj = stringObj.strip("{}")
+									if "optionsSize" not in stringObj:
+										stringKey, stringValue = stringObj.split(":")
+										stringKey = stringKey.strip("'")
+										stringValue = stringValue.strip("'")
+
+										print(f"{stringKey} : {stringValue}")
+
+									else:
+										stringKey, stringValue = stringObj.split(":")
+										stringKey = stringKey.strip("'")
+										stringValue = stringValue.strip("'")
+
+										print(f"{stringKey} : {stringValue}")
+
+						# print(key)
+
+					obj.Rescale()
+
+				CreatePropertyMenu(objType, obj)
+
 			file.close()
 
-		objType = fileData.split("(")[0]
-		attributes = fileData[len(objType) + 1:].strip("\n")
-
-		variables = {}
-		string = ""
-		numOfBrackets = False
-		
-		for char in attributes:
-			if char == "," and numOfBrackets <= 0:
-				variables[string.split("=")[0]] = string.split("=")[1]
-				string = ""
-			else:
-				if char != " " or numOfBrackets > 0:
-					string += char
-
-				if char == "(" or char == "{" or char == "[":
-					numOfBrackets += 1
-				if char == ")" or char == "}" or char == "]":
-					numOfBrackets -= 1
-		
-		variables[string.split("=")[0]] = string.split("=")[1]
-		
-		for key in variables:
-			string = [variables[key]]
-			string = DeconstructString(variables[key], ",", 1, strip=['"'])
-
-			strings = []
-			for strObj in string:
-				strObj = strObj.strip('()"')
-				strings.append(strObj)
-			variables[key] = strings
-
-			# print(key, "=", strings)
-		print(variables)
-
 # split string into several parts
-def DeconstructString(string, splitChars, bracketCount, strip=[]):
+def DeconstructString(string, splitChars, bracketCount, strip=""):
 	numOfBrackets = 0
 	output = []
 	outputString = ""
@@ -1400,7 +1539,7 @@ def DeconstructString(string, splitChars, bracketCount, strip=[]):
 		outputString = outputString.strip(stripChar)
 
 	output.append(outputString)
-	
+
 	return output
 
 # Show messages to user
@@ -1493,7 +1632,9 @@ def ProcessObject(obj, name):
 				"nonAllowedKeysFile": obj.nonAllowedKeysFilePath,
 				"allowedKeysFile": obj.allowedKeysFilePath,
 				"nonAllowedKeysList": obj.nonAllowedKeysList,
-				"allowedKeysList": obj.allowedKeysList
+				"allowedKeysList": obj.allowedKeysList,
+				# "nonAllowedKeys": obj.nonAllowedKeys,
+				# "allowedKeys": obj.allowedKeys
 			}
 
 		if type(obj) == Button:
