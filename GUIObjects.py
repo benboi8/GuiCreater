@@ -283,7 +283,6 @@ def AlignText(rect, textSurface, alignment="center", width=2):
 	elif vertical == "bottom":
 		y += h - textSurface.get_height() - ((width + 2) * sf)
 
-
 	return pg.Rect(x, y, w, h)
 
 
@@ -1136,6 +1135,7 @@ class MultiSelectButton(Button):
 		self.relativePos = inputData.get("relativePos", "center")
 		self.isScrollable = inputData.get("isScrollable", False)
 		self.allowNoSelection = inputData.get("allowNoSelection", False)
+		self.alignText = textData.get("alignText", "center-top")
 
 		self.activeOption = None
 		self.changed = False
@@ -1293,7 +1293,7 @@ class DropDownMenu(MultiSelectButton):
 	def __init__(self, surface, name, rect, colors, text, font, inputData={}, textData={}, drawData={}, imageData={}, lists=[allDropDowns]):
 		self.expandUpwards = drawData.get("expandUpwards", False)
 		self.inputIsHoldButton = inputData.get("inputIsHoldButton", False)
-		self.inactiveSize = drawData.get("inactiveY", 5)
+		self.inactiveSize = drawData.get("inactiveY", 10)
 		super().__init__(surface, name, rect, colors, text, font, inputData, textData, drawData, imageData, lists)
 
 	def CreateOptions(self):
@@ -1304,15 +1304,15 @@ class DropDownMenu(MultiSelectButton):
 		self.options = []
 
 		if self.optionsSize == None:
-			self.optionsSize = [self.ogRect.w, self.textSurface.get_height()//2]
+			self.optionsSize = [self.ogRect.w - 4 * sf, self.textSurface.get_height()//sf + 2]
 		else:
 			if self.optionsSize[0] == 0:
-				self.optionsSize = [self.ogRect.w, self.optionsSize[1]]
+				self.optionsSize = [self.ogRect.w - 4 * sf, self.optionsSize[1]]
 			if self.optionsSize[1] == 0:
-				self.optionsSize = [self.optionsSize[0], self.textSurface.get_height()//2]
+				self.optionsSize = [self.optionsSize[0], self.textSurface.get_height()//sf + 2]
 
 		if not self.expandUpwards:
-			rect = pg.Rect(self.ogRect.x + 3 * sf, self.ogRect.y + 2 * sf, self.optionsSize[0] - round(1.5 * sf), self.optionsSize[1])
+			rect = pg.Rect(self.ogRect.x + 3 * sf, self.ogRect.y + ((self.textSurface.get_height() // sf + self.inactiveSize) // 2), self.optionsSize[0] - round(1.5 * sf), self.optionsSize[1])
 			for i in range(self.numOfOptions):
 				rect = pg.Rect(rect.x, rect.y + rect.h + 1 * sf, rect.w, rect.h)
 				Button(self.surface, self.name, rect, (self.backgroundColor, self.inactiveColor, self.activeColor), self.optionNames[i], (self.fontName, self.fontSize // sf, self.fontColor), isHoldButton=self.inputIsHoldButton, textData={"alignText": "center"}, drawData={"drawBorder": True, "drawBackground": True, "roundedEdges": self.roundedEdges, "roundedCorners": self.roundedCorners, "roundness": self.roundness, "borderWidth": self.borderWidth / sf}, lists=[self.options])
@@ -1373,6 +1373,18 @@ class DropDownMenu(MultiSelectButton):
 					option.SwapColors(False)
 
 	def Draw(self):
+		if self.active:
+			if self.expandUpwards:
+				self.rect.h = self.ogRect.h * sf
+				self.rect.y = (self.ogRect.y * sf) - self.rect.h + self.textSurface.get_height() + self.inactiveSize * sf
+
+			else:
+				self.rect.h = self.ogRect.h * sf
+		else:
+			if self.expandUpwards:
+				self.rect.y = self.ogRect.y * sf
+			self.rect.h = self.textSurface.get_height() + self.inactiveSize * sf
+
 		if not self.roundedEdges and not self.roundedCorners:
 			pg.draw.rect(self.surface, self.backgroundColor, self.rect)
 
@@ -1391,19 +1403,8 @@ class DropDownMenu(MultiSelectButton):
 			self.surface.blit(self.textSurface, (self.textRect.x, self.textRect.y + 1 * sf))
 
 		if self.active:
-			if self.expandUpwards:
-				self.rect.h = self.ogRect.h * sf
-				self.rect.y = (self.ogRect.y * sf) - self.rect.h + self.textSurface.get_height() + self.inactiveSize * sf
-
-			else:
-				self.rect.h = self.ogRect.h * sf
-
 			for option in self.options:
 				option.Draw()
-		else:
-			if self.expandUpwards:
-				self.rect.y = self.ogRect.y * sf
-			self.rect.h = self.textSurface.get_height() + self.inactiveSize * sf
 		self.DrawImage()
 
 
@@ -1465,14 +1466,14 @@ def DrawGui():
 		if gameState in obj.activeSurface or obj.activeSurface == "all":
 			if type(obj) == TextInputBox:
 				if obj.rect.collidepoint(pg.mouse.get_pos()):
-					pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_IBEAM)
+					pg.mouse.set_cursor(pg.SYSTEM_CURSOR_IBEAM)
 					hoverInput = True
 
 				if hoverInput:
 					break
 
 	if not hoverInput:
-		pg.mouse.set_system_cursor(pg.SYSTEM_CURSOR_ARROW)
+		pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
 	for box in allBoxs:
 		if gameState in box.activeSurface or box.activeSurface == "all":
