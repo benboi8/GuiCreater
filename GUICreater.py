@@ -7,7 +7,7 @@
 # |3| fix slider attributes - 0%
 # |4| add mouse keybinding - 80% - add dynamic event handling for mouse events
 # |5| fix text-input cursor - 0%
-# |6| add loading - 90% - testing - numOfOptions doesn't work
+# |6| add loading - 92% - testing - colors aren't correct - height doesn't work, overlap with options heights?
 # |7| fix allowedKeys and nonAllowedKeys in attributes - 0% - change set to string
 	# "allowedKeys": {
 	# 			"name": "allowedKeys",
@@ -41,13 +41,19 @@
 	# 				"splashText": ""
 	# 			}
 	# 		}
+# |8| create file logging system for errors - 0%
 
 
 # import GUI objects
-import sys
-sys.path.insert(1, "/Python Projects/GuiObjects")
+try:
+	import sys
+	sys.path.insert(1, "/Python Projects/GuiObjects")
 
-from GUIObjects import *
+	from GUIObjects import *
+except ModuleNotFoundError:
+	print("GUIObjects can not be found.")
+	exit()
+
 import json
 
 # create screen
@@ -387,6 +393,8 @@ class Attribute:
 
 	def HandleEvent(self, event):
 		global activeProperty
+		if type(self.parentObject) == DropDownMenu:
+			isActive = getattr(self.parentObject, "active")
 		# is input a number
 		isNum = False
 
@@ -582,7 +590,6 @@ class Attribute:
 							setattr(self.parentObject, self.name, 1)
 						self.parentObject.Rescale()
 
-
 					elif "options" in self.name:
 						if "FontName" in self.name:
 							setattr(self.parentObject, self.name, str(value))
@@ -597,6 +604,7 @@ class Attribute:
 						if value == "":
 							value = 0
 						setattr(self.parentObject, self.name, int(value))
+
 
 					elif "Option-" in self.name:
 						options = getattr(self.parentObject, "optionNames")
@@ -676,6 +684,9 @@ class Attribute:
 			else:
 				if self.name in self.parentObject.__dict__:
 					setattr(self.parentObject, self.name, value)
+
+		if type(self.parentObject) == DropDownMenu:
+			setattr(self.parentObject, "active", isActive)
 
 	def AddAttribute(self, name, value):
 		for obj in self.numOfOptionsList:
@@ -945,13 +956,15 @@ def CreateObject(objType):
 		obj = Slider(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
 
 	elif objType == "Switch":
-		obj = Switch(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+		obj = Switch(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSwitchs])
 
 	elif objType == "MultiSelectButton":
-		obj = MultiSelectButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+		rect = pg.Rect(rect.x, rect.y, rect.w, 100)
+		obj = MultiSelectButton(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allMultiButtons])
 
 	elif objType == "DropDownMenu":
-		obj = DropDownMenu(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allSliders])
+		rect = pg.Rect(rect.x, rect.y, rect.w, 100)
+		obj = DropDownMenu(screen, "", rect, (lightBlack, darkWhite, lightRed), "", (fontName, fontSize, white), lists=[allObjects, allDropDowns])
 
 	return obj
 
@@ -984,7 +997,8 @@ def CreatePropertyMenu(objType, newObj=None):
 			objTypeName = name
 			break
 
-	Properties(screen, objType, (width - 160, 0, 160, height), (lightBlack, darkWhite, lightRed), f"{objTypeName} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
+	size = 180
+	Properties(screen, objType, (width - size, 0, size, height), (lightBlack, darkWhite, lightRed), f"{objTypeName} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
 	activeProperty = newObj
 
 	mainCamera.CreateDifferences()
@@ -1415,6 +1429,37 @@ def CheckSaveFolder(saveFolder):
 	if not os.path.isdir(f'./{saveFolder}'):
 		os.mkdir(f"./{saveFolder}")
 
+# remove every instance of an object
+def RemoveObjFromAllLists(obj):
+	if obj in allObjects:
+		allObjects.remove(obj)
+	if obj in allBoxs:
+		allBoxs.remove(obj)
+	if obj in allImageFrames:
+		allImageFrames.remove(obj)
+	if obj in allLabels:
+		allLabels.remove(obj)
+	if obj in allTextBoxs:
+		allTextBoxs.remove(obj)
+	if obj in allButtons:
+		allButtons.remove(obj)
+	if obj in activeButtons:
+		activeButtons.remove(obj)
+	if obj in allSliders:
+		allSliders.remove(obj)
+	if obj in allScrollbars:
+		allScrollbars.remove(obj)
+	if obj in allSwitchs:
+		allSwitchs.remove(obj)
+	if obj in allMultiButtons:
+		allMultiButtons.remove(obj)
+	if obj in allDropDowns:
+		allDropDowns.remove(obj)
+	if obj in allMessageBoxs:
+		allMessageBoxs.remove(obj)
+	if obj in allGUIObjects:
+		allGUIObjects.remove(obj)
+
 # load
 def Load(saveName=None, saveFolder=savePath):
 	# check if save folder exists make one if it doesn't
@@ -1426,13 +1471,9 @@ def Load(saveName=None, saveFolder=savePath):
 
 	# check if the save name isn't empty
 	if saveName != "" and saveName != saveObjs.get("saveFileName").splashText:
-		# remove all current objects   ---   broken
-		r = []
+		# remove all current objects
 		for obj in allObjects:
-			r.append(obj)
-		for obj in r:
-			if obj in allObjects:
-				allObjects.remove(obj)
+			RemoveObjFromAllLists(obj)
 
 		# open the save file
 		with open(saveFolder + saveName + ".py", "r") as file:
@@ -1581,6 +1622,10 @@ def Load(saveName=None, saveFolder=savePath):
 												name = name.strip("[](), '")
 												values.append(name)
 											stringValue = values
+											if values[0] == "":
+												variablesToAdd["numOfOptions"] = 0
+											else:
+												variablesToAdd["numOfOptions"] = len(values)
 
 									else:
 										stringKey, stringValue = stringObj.split(":")
@@ -1601,6 +1646,10 @@ def Load(saveName=None, saveFolder=savePath):
 												name = name.strip("[](), '")
 												values.append(name)
 											stringValue = values
+											if values[0] == "":
+												variablesToAdd["numOfOptions"] = 0
+											else:
+												variablesToAdd["numOfOptions"] = len(values)
 
 									else:
 										stringKey, stringValue = stringObj.split(":")
@@ -1612,9 +1661,8 @@ def Load(saveName=None, saveFolder=savePath):
 
 					obj.Rescale()
 
-				CreatePropertyMenu(objType, obj)
-
 				for key in variablesToAdd:
+					print(key, variablesToAdd[key])
 					try:
 						variablesToAdd[key] = int(variablesToAdd[key])
 					except:
@@ -1631,7 +1679,13 @@ def Load(saveName=None, saveFolder=savePath):
 
 					setattr(obj, key, variablesToAdd[key])
 
-					obj.Rescale()
+				obj.Rescale()
+
+				if objType == "MultiSelectButton" or objType == "DropDownMenu":
+					obj.CreateOptions()
+					print(obj.numOfOptions)
+
+				CreatePropertyMenu(objType, obj)
 
 			file.close()
 
@@ -1828,11 +1882,11 @@ DropDownMenu(screen, "objectMenu", (0, 0, 150, height), (lightBlack, darkWhite, 
 # camera
 mainCamera = Camera("Camera", (40, 40, 640, 360), ((50, 50, 50), lightGray))
 
-confirmSave = Button(screen, "confirmSave", (460, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+confirmSave = Button(screen, "confirmSave", (460, 0, 65, 25), (lightBlack, darkWhite, lightRed), "Save", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 saveFileName = TextInputBox(screen, "saveFileName", (150, 0, 310, 25), (lightBlack, darkWhite, lightRed), ("arial", 12, white), inputData={"splashText": "Save name: ", "charLimit": 23, "allowedKeysFile": "textAllowedKeys.txt"}, textData={"alignText": "left"}, drawData={"replaceSplashText": False}, lists=[saveObjs, allDropDowns])
-confirmLoad = Button(screen, "confirmLoad", (635, 0, 75, 25), (lightBlack, darkWhite, lightRed), "Load", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
+confirmLoad = Button(screen, "confirmLoad", (625, 0, 65, 25), (lightBlack, darkWhite, lightRed), "Load", ("arial", 12, white), isHoldButton=True, lists=[saveObjs, allDropDowns])
 
-keyBindingsButton = Button(screen, "keyBindings", (535, 0, 100, 25), (lightBlack, darkWhite, lightRed), "Key bindings", ("arial", 12, white), isHoldButton=True, lists=[keyBindingObjs, allButtons])
+keyBindingsButton = Button(screen, "keyBindings", (525, 0, 100, 25), (lightBlack, darkWhite, lightRed), "Key bindings", ("arial", 12, white), isHoldButton=True, lists=[keyBindingObjs, allButtons])
 
 SetKeyBinds()
 
