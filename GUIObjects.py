@@ -1,3 +1,6 @@
+# add file handler object
+# add camera object
+
 import pygame as pg
 from pygame import gfxdraw
 from imageScaling import *
@@ -11,7 +14,7 @@ pg.init()
 clock = pg.time.Clock()
 
 sf = 2
-gameState = "all"
+programState = "all"
 
 running = True
 
@@ -1460,10 +1463,10 @@ class MessageBox(Label):
 		self.cancelButton.Draw()
 
 
-def DrawGui():
+def DrawGui(state=programState):
 	hoverInput = False
 	for obj in allGUIObjects:
-		if gameState in obj.activeSurface or obj.activeSurface == "all":
+		if state in obj.activeSurface or obj.activeSurface == "all":
 			if type(obj) == TextInputBox:
 				if obj.rect.collidepoint(pg.mouse.get_pos()):
 					pg.mouse.set_cursor(pg.SYSTEM_CURSOR_IBEAM)
@@ -1476,85 +1479,85 @@ def DrawGui():
 		pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
 	for box in allBoxs:
-		if gameState in box.activeSurface or box.activeSurface == "all":
+		if state in box.activeSurface or box.activeSurface == "all":
 			box.Draw()
 
 	for imageFrame in allImageFrames:
-		if gameState in imageFrame.activeSurface or imageFrame.activeSurface == "all":
+		if state in imageFrame.activeSurface or imageFrame.activeSurface == "all":
 			imageFrame.Draw()
 
 	for label in allLabels:
-		if gameState in label.activeSurface or label.activeSurface == "all":
+		if state in label.activeSurface or label.activeSurface == "all":
 			label.Draw()
 
 	for button in allButtons:
-		if gameState in button.activeSurface or button.activeSurface == "all":
+		if state in button.activeSurface or button.activeSurface == "all":
 			button.Draw()
 
 	for textInputBox in allTextBoxs:
-		if gameState in textInputBox.activeSurface or textInputBox.activeSurface == "all":
+		if state in textInputBox.activeSurface or textInputBox.activeSurface == "all":
 			textInputBox.Draw()
 
 	for slider in allSliders:
-		if gameState in slider.activeSurface or slider.activeSurface == "all":
+		if state in slider.activeSurface or slider.activeSurface == "all":
 			slider.Draw()
 
 	for scrollBar in allScrollbars:
-		if gameState in scrollBar.activeSurface or scrollBar.activeSurface == "all":
+		if state in scrollBar.activeSurface or scrollBar.activeSurface == "all":
 			scrollBar.Draw()
 
 	for switch in allSwitchs:
-		if gameState in switch.activeSurface or switch.activeSurface == "all":
+		if state in switch.activeSurface or switch.activeSurface == "all":
 			switch.Draw()
 
 	for button in allMultiButtons:
-		if gameState in button.activeSurface or button.activeSurface == "all":
+		if state in button.activeSurface or button.activeSurface == "all":
 			button.Draw()
 
 	for dropDown in allDropDowns:
-		if gameState in dropDown.activeSurface or dropDown.activeSurface == "all":
+		if state in dropDown.activeSurface or dropDown.activeSurface == "all":
 			dropDown.Draw()
 
 	for messageBox in allMessageBoxs:
-		if gameState in messageBox.activeSurface or messageBox.activeSurface == "all":
+		if state in messageBox.activeSurface or messageBox.activeSurface == "all":
 			messageBox.Draw()
 
 
-def HandleGUI(event):
+def HandleGui(event, state=programState):
 	for label in allLabels:
-		if gameState in label.activeSurface or label.activeSurface == "all":
+		if state in label.activeSurface or label.activeSurface == "all":
 			label.HandleEvent(event)
 
 	for button in allButtons:
-		if gameState in button.activeSurface or button.activeSurface == "all":
+		if state in button.activeSurface or button.activeSurface == "all":
 			button.HandleEvent(event)
 
 	for textInputBox in allTextBoxs:
-		if gameState in textInputBox.activeSurface or textInputBox.activeSurface == "all":
+		if state in textInputBox.activeSurface or textInputBox.activeSurface == "all":
 			textInputBox.HandleEvent(event)
 
 	for slider in allSliders:
-		if gameState in slider.activeSurface or slider.activeSurface == "all":
+		if state in slider.activeSurface or slider.activeSurface == "all":
 			slider.HandleEvent(event)
 
 	for scrollBar in allScrollbars:
-		if gameState in scrollBar.activeSurface or scrollBar.activeSurface == "all":
+		if state in scrollBar.activeSurface or scrollBar.activeSurface == "all":
 			scrollBar.HandleEvent(event)
 
 	for switch in allSwitchs:
-		if gameState in switch.activeSurface or switch.activeSurface == "all":
+		if state in switch.activeSurface or switch.activeSurface == "all":
 			switch.HandleEvent(event)
 
 	for button in allMultiButtons:
-		if gameState in button.activeSurface or button.activeSurface == "all":
+		if state in button.activeSurface or button.activeSurface == "all":
 			button.HandleEvent(event)
 
 	for dropDown in allDropDowns:
-		if gameState in dropDown.activeSurface or dropDown.activeSurface == "all":
+		if state in dropDown.activeSurface or dropDown.activeSurface == "all":
 			dropDown.HandleEvent(event)
 
 	for messageBox in allMessageBoxs:
-		if gameState in messageBox.activeSurface or messageBox.activeSurface == "all":
+		if state in messageBox.activeSurface or messageBox.activeSurface == "all":
 			messageBox.HandleEvent(event)
 
 
@@ -1568,7 +1571,7 @@ def ButtonPress():
 
 if __name__ == "__main__":
 	Rescale(sf)
-	gameState = "Load character menu"
+	programState = "Load character menu"
 	options = []
 	for i in range(0, 50):
 		options.append(str(i))
@@ -1607,7 +1610,7 @@ if __name__ == "__main__":
 				if pg.key.get_pressed()[pg.K_3] and pg.key.get_pressed()[pg.K_LCTRL]:
 					Rescale(3)
 
-			HandleGUI(event)
+			HandleGui(event)
 
 		ButtonPress()
 		DrawLoop()
