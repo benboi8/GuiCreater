@@ -895,11 +895,11 @@ def DrawLoop():
 		Inspect()
 
 	for objMenu in objectMenus:
-		if gameState in objMenu.activeSurface or objMenu.activeSurface == "all":
+		if programState in objMenu.activeSurface or objMenu.activeSurface == "all":
 			objMenu.Draw()
 
 	for menu in propertiesMenus:
-		if gameState in menu.activeSurface or menu.activeSurface == "all":
+		if programState in menu.activeSurface or menu.activeSurface == "all":
 			if menu.parentObject == activeProperty:
 				menu.Draw()
 
@@ -1094,16 +1094,16 @@ def HandleEvents(event):
 				rebindingKeys = True
 
 	# handle gui events
-	HandleGUI(event)
+	HandleGui(event)
 
 	# handle object menus
 	for objMenu in objectMenus:
-		if gameState in objMenu.activeSurface or objMenu.activeSurface == "all":
+		if programState in objMenu.activeSurface or objMenu.activeSurface == "all":
 			objMenu.HandleEvent(event)
 
 	# handle property menus
 	for menu in propertiesMenus:
-		if gameState in menu.activeSurface or menu.activeSurface == "all":
+		if programState in menu.activeSurface or menu.activeSurface == "all":
 			if menu.parentObject == activeProperty:
 				menu.HandleEvent(event)
 
@@ -1168,7 +1168,7 @@ def HandleEvents(event):
 
 
 		for obj in allGUIObjects:
-			if gameState in obj.activeSurface or obj.activeSurface == "all":
+			if programState in obj.activeSurface or obj.activeSurface == "all":
 				if type(obj) == TextInputBox:
 					if obj.active:
 						return
