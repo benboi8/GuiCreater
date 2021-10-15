@@ -7,7 +7,7 @@
 # |3| fix slider attributes - 0%
 # |4| add mouse keybinding - 80% - add dynamic event handling for mouse events
 # |5| fix text-input cursor - 0%
-# |6| add loading - 92% - testing - colors aren't correct - height doesn't work, overlap with options heights?
+# |6| add loading - 92% - needs testing
 # |7| fix allowedKeys and nonAllowedKeys in attributes - 0% - change set to string
 	# "allowedKeys": {
 	# 			"name": "allowedKeys",
@@ -284,6 +284,10 @@ class Attribute:
 				if self.name.split("-")[1] == "H":
 					self.textBox.text = str(self.parentObject.rect.h // sf)
 
+			elif self.name == "numOfOptions":
+				print(self.parentObject.numOfOptions)
+				self.textBox.text = str(getattr(self.parentObject, self.name))
+
 			elif "options" in self.name:
 				if "FontColor" in self.name:
 					if self.name.split("-")[0] in self.parentObject.__dict__:
@@ -330,9 +334,6 @@ class Attribute:
 						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[1])
 					if self.name.split("-")[1] == "B":
 						self.textBox.text = str(getattr(self.parentObject, self.name.split("-")[0])[2])
-
-			elif self.name == "numOfOptions":
-				self.textBox.text = str(getattr(self.parentObject, self.name))
 
 			elif "Option-" in self.name:
 				self.textBox.text = str((getattr(self.parentObject, "optionNames")[int(self.name.split("-")[1].strip(":"))]))
@@ -853,6 +854,13 @@ class Properties(DropDownMenu):
 		for attribute in self.attributes:
 			attribute.UpdateRects()
 
+	def UpdateAttributes(self):
+		for attribute in self.attributes:
+			attribute.parentObject = self.parentObject
+			attribute.parent = self
+			attribute.CreateObject()
+			attribute.UpdateRects()
+
 # inspection
 class Inspector(Label):
 	def __init__(self, surface, name, rect, colors, child, text, font, textData={}, drawData={}, imageData={}, lists=[]):
@@ -998,10 +1006,12 @@ def CreatePropertyMenu(objType, newObj=None):
 			break
 
 	size = 180
-	Properties(screen, objType, (width - size, 0, size, height), (lightBlack, darkWhite, lightRed), f"{objTypeName} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
+	propertyMenu = Properties(screen, objType, (width - size, 0, size, height), (lightBlack, darkWhite, lightRed), f"{objTypeName} - Properties", ("arial", 12, white), textData={"alignText": "center-top"}, inputData={"attributes": attributes, "isScrollable": True, "parentObject": newObj}, drawData={"inactiveY": 11.5})
 	activeProperty = newObj
 
 	mainCamera.CreateDifferences()
+
+	return propertyMenu
 
 # inspect an object
 def Inspect():
@@ -1526,6 +1536,7 @@ def Load(saveName=None, saveFolder=savePath):
 							setattr(obj, key, variables[key][0])
 					else:
 						if key == "rect":
+							print(key, variables[key])
 							setattr(obj, "ogRect", pg.Rect(int(variables[key][0]), int(variables[key][1]), int(variables[key][2]), int(variables[key][3])))
 
 						if key == "colors":
@@ -1534,8 +1545,8 @@ def Load(saveName=None, saveFolder=savePath):
 							if len(variables[key]) == 2:
 								setattr(obj, "foregroundColor", (int(variables[key][1].split(", ")[0]), int(variables[key][1].split(", ")[1]), int(variables[key][1].split(", ")[2])))
 							else:
-								setattr(obj, "inactiveColor", (int(variables[key][0].split(", ")[0]), int(variables[key][0].split(", ")[1]), int(variables[key][0].split(", ")[2])))
-								setattr(obj, "activeColor", (int(variables[key][1].split(", ")[0]), int(variables[key][1].split(", ")[1]), int(variables[key][1].split(", ")[2])))
+								setattr(obj, "inactiveColor", (int(variables[key][1].split(", ")[0]), int(variables[key][1].split(", ")[1]), int(variables[key][1].split(", ")[2])))
+								setattr(obj, "activeColor", (int(variables[key][2].split(", ")[0]), int(variables[key][2].split(", ")[1]), int(variables[key][2].split(", ")[2])))
 
 						if key == "drawData":
 							for stringObj in variables[key]:
@@ -1661,8 +1672,11 @@ def Load(saveName=None, saveFolder=savePath):
 
 					obj.Rescale()
 
+				propertyMenu = CreatePropertyMenu(objType, obj)
+				propertyMenu.parentObject = obj
+				propertyMenu.UpdateAttributes()
+
 				for key in variablesToAdd:
-					print(key, variablesToAdd[key])
 					try:
 						variablesToAdd[key] = int(variablesToAdd[key])
 					except:
@@ -1679,13 +1693,15 @@ def Load(saveName=None, saveFolder=savePath):
 
 					setattr(obj, key, variablesToAdd[key])
 
-				obj.Rescale()
-
 				if objType == "MultiSelectButton" or objType == "DropDownMenu":
+					obj.numOfOptions = variablesToAdd["numOfOptions"]
+					obj.Rescale()
 					obj.CreateOptions()
-					print(obj.numOfOptions)
 
-				CreatePropertyMenu(objType, obj)
+				obj.Rescale()
+				for attribute in propertyMenu.attributes:
+					if attribute.name == "numOfOptions":
+						attribute.textBox.text = str(variablesToAdd["numOfOptions"])
 
 			file.close()
 
@@ -1741,7 +1757,7 @@ def ProcessObject(obj, name):
 		DropDownMenu: allDropDowns
 	}
 
-	rect = ((obj.rect.x - mainCamera.rect.x) // sf, (obj.rect.y - mainCamera.rect.y) // sf, obj.rect.w // sf, obj.rect.h // sf)
+	rect = (obj.ogRect.x - (mainCamera.rect.x // sf), obj.ogRect.y - (mainCamera.rect.y // sf), obj.ogRect.w, obj.ogRect.h)
 
 	if type(obj) == Box or type(obj) == ImageFrame or type(obj) == Label or type(obj) == Switch:
 		colors = (obj.backgroundColor, obj.foregroundColor)
